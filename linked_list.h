@@ -6,7 +6,7 @@
 
 struct LinkedListElement {
   void *data;
-  struct LinkedListELement *next;
+  struct LinkedListElement *next;
 };
 
 struct LinkedList {
@@ -47,7 +47,7 @@ void linked_list_destroy(struct LinkedList *list);
 // @return Whether the operation was a success or not.
 bool linked_list_insert_after(struct LinkedList *list, 
                               struct LinkedListElement *element, 
-                              const void *data);
+                              void *data);
 
 // Deletes the element just afte element.
 //
@@ -119,7 +119,6 @@ void *linked_list_data(struct LinkedListElement *element);
 //
 // @param element The element of which we want the successor.
 // @return A pointer to the element following it.
-struct LinkedListElement *linked_list_next(
-    const struct LinkedListElement *element);
+struct LinkedListElement *linked_list_next(struct LinkedListElement *element);
 
 #endif

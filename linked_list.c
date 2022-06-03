@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "linked_list.h"
 
 void linked_list_init(struct LinkedList *list, void (*destroy)(void *data))
@@ -23,13 +24,6 @@ void linked_list_destroy(struct LinkedList *list)
   memset(list, 0, sizeof(*list));
 }
 
-bool linked_list_remove_after(struct LinkedList *list, 
-                              struct LinkedListElement *element,
-                              void **data)
-{
-  return 1;
-}
-
 unsigned int linked_list_size(const struct LinkedList *list)
 {
   return list->size;
@@ -46,7 +40,7 @@ struct LinkedListElement *linked_list_tail(struct LinkedList *list)
 }
 
 bool linked_list_insert_after(struct LinkedList *list, 
-                              struct LinkedListElement after,
+                              struct LinkedListElement *after,
                               void *data)
 {
   if (list == NULL) {
@@ -59,13 +53,13 @@ bool linked_list_insert_after(struct LinkedList *list,
     return false;
   }
   new->data = data;
-  new->next = (after == NULL) ? NULL : after->next;
+  new->next = ((after == NULL) ? NULL : after->next);
   if (after == NULL) {
     list->head = new;
   } else {
     after->next = new;
   }
-  if (list_is_tail(after)) list->tail = new;
+  if (after == list->tail) list->tail = new;
   return true;
 }
 
@@ -113,8 +107,7 @@ void *linked_list_data(struct LinkedListElement *element)
   return element->data;
 }
 
-struct LinkedListElement *linked_list_next(
-    const struct LinkedListElement *element)
+struct LinkedListElement *linked_list_next(struct LinkedListElement *element)
 {
   return element->next;
 }

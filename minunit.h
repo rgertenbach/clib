@@ -4,23 +4,25 @@
 //
 // @param message The name of the test / message to send when the test fails.
 // @param test A c expression to run, falsy values mean a failure.
-#define mu_test(message, test) do { \
-  printf("%s:\t", message); \
-  if ((test)) printf("Passed\n"); \
-  else { \
-    printf("Failed\n"); \
-    return 1; \
+// @param cleanup Optional cleanup freeing memory.
+#define mu_test(message, test, cleanup) do { \
+  if (!(test)) { \
+    cleanup(); \
+    return message; \
   } \
-  return 0; \
 } while (0)
 
 // Calls function which runs a test checking if it was successful.
 //
 // @param test The test function to run. Must take void.
 #define mu_run_test(test) do { \
-  char failed = test(); \
+  printf(#test ": "); \
+  char *failed = test(); \
   tests_run++; \
-  if (failed) tests_failed++; \
+  if (failed != NULL) { \
+    tests_failed++; \
+    printf("FAILED: %s\n", failed); \
+  } else printf("passed\n"); \
 } while (0)
 
 // Global keeping track of the number of tests run.
