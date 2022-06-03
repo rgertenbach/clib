@@ -11,9 +11,6 @@ struct LinkedListElement {
 
 struct LinkedList {
   unsigned int size;
-  // ???
-  int (*match)(const void *key1, const void *key2);
-
   void (*destroy)(void *data);
   struct LinkedListElement *head;
   struct LinkedListElement *tail;
