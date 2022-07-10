@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "linked_list.h"
+#include "list.h"
 
-void linked_list_init(struct LinkedList *list, void (*destroy)(void *data))
+void list_init(struct List *list, void (*destroy)(void *data))
 {
   list->size = 0;
   list->destroy = destroy;
@@ -12,42 +12,42 @@ void linked_list_init(struct LinkedList *list, void (*destroy)(void *data))
   list->tail = NULL;
 }
 
-void linked_list_destroy(struct LinkedList *list)
+void list_destroy(struct List *list)
 {
   if (list == NULL) return;
   void *data = NULL;
 
-  while (linked_list_size(list) > 0) {
-    if (linked_list_remove_after(list, NULL, &data) && list->destroy != NULL) 
+  while (list_size(list) > 0) {
+    if (list_remove_after(list, NULL, &data) && list->destroy != NULL) 
       list->destroy(data);
   }
   memset(list, 0, sizeof(*list));
 }
 
-unsigned int linked_list_size(struct LinkedList const * const list)
+unsigned int list_size(struct List const * const list)
 {
   return list->size;
 }
 
-struct LinkedListElement *linked_list_head(struct LinkedList *list)
+struct ListElement *list_head(struct List *list)
 {
   return list->head;
 }
 
-struct LinkedListElement *linked_list_tail(struct LinkedList *list)
+struct ListElement *list_tail(struct List *list)
 {
   return list->tail;
 }
 
-bool linked_list_insert_after(struct LinkedList *list, 
-                              struct LinkedListElement *after,
-                              void *data)
+bool list_insert_after(struct List *list, 
+                       struct ListElement *after,
+                       void *data)
 {
   if (list == NULL) {
     fprintf(stderr, "List must not be NULL");
     return false;
   }
-  struct LinkedListElement *new = malloc(sizeof(struct LinkedListElement));
+  struct ListElement *new = malloc(sizeof(struct ListElement));
   if (new == NULL) {
     fprintf(stderr, "No space to allocate new element");
     return false;
@@ -65,15 +65,15 @@ bool linked_list_insert_after(struct LinkedList *list,
   return true;
 }
 
-bool linked_list_remove_after(struct LinkedList *list,
-                              struct LinkedListElement *after,
-                              void **data)
+bool list_remove_after(struct List *list,
+                       struct ListElement *after,
+                       void **data)
 {
   if (list == NULL) {
     fprintf(stderr, "List must not be NULL\n");
     return false;
   }
-  struct LinkedListElement *target;
+  struct ListElement *target;
   if (after == NULL) {  // Remove head.
     target = list->head;
     if (target != NULL) list->head = target->next;
@@ -92,23 +92,23 @@ bool linked_list_remove_after(struct LinkedList *list,
   return true;
 }
 
-bool linked_list_is_tail(struct LinkedListElement *element)
+bool list_is_tail(struct ListElement *element)
 {
   return element->next == NULL;
 }
                       
-bool linked_list_is_head(struct LinkedList *list,
-                         struct LinkedListElement *element)
+bool list_is_head(struct List *list,
+                  struct ListElement *element)
 {
   return element == list->head;
 }
 
-void *linked_list_data(struct LinkedListElement *element)
+void *list_data(struct ListElement *element)
 {
   return element->data;
 }
 
-struct LinkedListElement *linked_list_next(struct LinkedListElement *element)
+struct ListElement *list_next(struct ListElement *element)
 {
   return element->next;
 }
