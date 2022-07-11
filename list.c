@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
 #include "list.h"
 
 void list_init(struct List *list, void (*destroy)(void *data))

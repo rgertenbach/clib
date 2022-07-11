@@ -2,7 +2,6 @@
 #define LIST_H
 
 #include <stdbool.h>
-#include <stdlib.h>
 
 struct ListElement {
   void *data;
