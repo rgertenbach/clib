@@ -19,7 +19,7 @@ char *test_init_works(void)
   return NULL;
 }
 
-char *test_insert_before_works(void)
+char *test_insert_after_works(void)
 {
   struct Dlist *list = malloc(sizeof(struct Dlist));
   dlist_init(list, NULL);
@@ -61,6 +61,64 @@ char *test_insert_before_works(void)
   mu_test("Tail 71", *(int *)list->tail->data == 71, cleanup);
   cleanup();  // Cleanup of filled list works.
   return NULL;
+ 
+  // Order checks
+  mu_test("Head is 68", *(int *)list->head->data == 68, cleanup);
+  mu_test("E1 is 69", *(int *)list->head->next->data == 69, cleanup);
+  mu_test("E2 is 69.5", *(double *)list->head->next->next->data == 69.5, cleanup);
+  mu_test("E3 is 70", *(int *)list->head->next->next->next->data == 70, cleanup);
+  mu_test("E4 is 71", *(int *)list->head->next->next->next->next->data == 71, cleanup);
+}
+
+char *test_insert_before_works(void)
+{
+  struct Dlist *list = malloc(sizeof(struct Dlist));
+  dlist_init(list, NULL);
+  int value = 69;
+  dlist_insert_before(list, dlist_head(list), &value);
+  mu_test("Head is 69", *(int *)list->head->data == 69, cleanup);
+  mu_test("Size is 1", dlist_size(list) == 1, cleanup);
+  mu_test("Tail is head", list->tail == list->head, cleanup);
+  
+  // Inserting at tail.
+  int value2 = 70;
+  dlist_insert_before(list, NULL, &value2);
+  mu_test("Head is still 69", *(int *)list->head->data == 69, cleanup);
+  mu_test("Size is 2", dlist_size(list) == 2, cleanup);
+  mu_test("Tail 70", *((int *)list->tail->data) == 70, cleanup);
+
+  // Inserting at tail again.
+  int value3 = 71;
+  dlist_insert_before(list, NULL, &value3);
+  mu_test("Head is still 69", *(int *)list->head->data == 69, cleanup);
+  mu_test("Size is 3", dlist_size(list) == 3, cleanup);
+  mu_test("Tail 71", *((int *)list->tail->data) == 71, cleanup);
+
+  // Inserting at head.
+  int value4 = 68;
+  dlist_insert_before(list, dlist_head(list), &value4);
+  mu_test("Head is now 68", *(int *)list->head->data == 68, cleanup);
+  mu_test("Size is 4", dlist_size(list) == 4, cleanup);
+  mu_test("Tail 71", *((int *)list->tail->data) == 71, cleanup);
+
+  // Inserting in middle.
+  double value5 = 69.5;
+  dlist_insert_before(list, list->head->next->next, &value5);
+  mu_test("Head is still 68", *(int *)list->head->data == 68, cleanup);
+  mu_test("New element is at pos", 
+          *(double *)list->head->next->next->data == 69.5, 
+          cleanup);
+  mu_test("Size is 5", dlist_size(list) == 5, cleanup);
+  mu_test("Tail 71", *(int *)list->tail->data == 71, cleanup);
+  
+  // Order checks
+  mu_test("Head is 68", *(int *)list->head->data == 68, cleanup);
+  mu_test("E1 is 69", *(int *)list->head->next->data == 69, cleanup);
+  mu_test("E2 is 69.5", *(double *)list->head->next->next->data == 69.5, cleanup);
+  mu_test("E3 is 70", *(int *)list->head->next->next->next->data == 70, cleanup);
+  mu_test("E4 is 71", *(int *)list->head->next->next->next->next->data == 71, cleanup);
+  cleanup();  // Cleanup of filled list works.
+  return NULL;
 }
 
 char *test_remove_works(void)
@@ -95,6 +153,7 @@ char *test_destructor_works(void)
 void all_tests(void)
 {
   mu_run_test(test_init_works);
+  mu_run_test(test_insert_after_works);
   mu_run_test(test_insert_before_works);
   mu_run_test(test_remove_works);
   mu_run_test(test_destructor_works);

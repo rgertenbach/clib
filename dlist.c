@@ -88,7 +88,6 @@ bool dlist_insert_after(struct Dlist *list,
   return true;
 }
 
-// TODO test more
 bool dlist_insert_before(struct Dlist *list, 
                          struct DlistElement *before,
                          void *data)
@@ -106,12 +105,12 @@ bool dlist_insert_before(struct Dlist *list,
   new->next = before;
   if (before == NULL) {
     new->prev = list->tail;
-    list->tail->next = new;
+    if (list->tail != NULL) list->tail->next = new;
     list->tail = new;
   } else {
     new->prev = before->prev;
     before->prev = new;
-    new->prev->next = new;
+    if (new->prev != NULL) new->prev->next = new;
   }
   if (before == list->head) list->head = new;
   list->size++;
