@@ -1,5 +1,5 @@
 #/usr/bin/bash
 
-cc list_test.c list.c -Wall -Wextra -o list_test && \
-  ./list_test && \
-  rm list_test
+cc clist_test.c clist.c -Wall -Wextra -o clist_test && \
+  ./clist_test && \
+  rm clist_test

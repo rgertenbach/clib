@@ -54,8 +54,8 @@ bool clist_is_current(struct CList *list, struct CListElement *element);
 // The complexity is O(1).
 //
 // @param list The list to insert the element into.
-// @param element The element to insert after. If NULL then the inserted element
-//   will be the new head.
+// @param element The element to insert after. May only be NULL if the list is
+//   empty.
 // @param data A void pointer to the new data.
 // @return Whether the operation was a success or not.
 bool clist_insert_after(struct CList *list, 

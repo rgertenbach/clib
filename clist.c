@@ -16,9 +16,20 @@ void clist_destroy(struct CList *list)
 {
   if (list == NULL) return;
   void *data = NULL;
+  struct CListElement *curr = list->curr;
+  struct CListElement *next = NULL;
+  // force an end
+  if (curr != NULL) {
+    next = curr->next;
+    curr->next = NULL;
+  }
 
-  while (clist_size(list) > 0) {
-    if (clist_remove_after(list, NULL, &data) && list->destroy != NULL) 
+  while (next != NULL) {
+    curr = next;
+    next = curr->next;
+    curr->next = NULL;
+    data = curr->data;
+    if (list->destroy != NULL) 
       list->destroy(data);
   }
   memset(list, 0, sizeof(*list));
@@ -53,10 +64,19 @@ bool clist_insert_after(struct CList *list,
     fprintf(stderr, "No space to allocate new element");
     return false;
   }
+  if (list->size == 0 && after != NULL) {
+    fprintf(stderr, "List is empty but after is not NULL.");
+    return false;
+  }
+  if (list->size > 0 && after == NULL) {
+    fprintf(stderr, "after may only be NULL if the list is empty.");
+    return false;
+  }
+
   new->data = data;
   if (after == NULL) {
-    new->next = list->curr;
-    list->curr=new;
+    new->next = new;
+    list->curr = new;
   } else {
     new->next = after->next;
     after->next = new;

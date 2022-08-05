@@ -14,54 +14,48 @@ char *test_init_works(void)
   struct CList *list = malloc(sizeof(struct CList));
   clist_init(list, NULL);
   mu_test("List should have size 0", clist_size(list) == 0, cleanup);
-  mu_test("List's head should be NULL", clist_current(list) == NULL, cleanup);
+  mu_test("List's current should be NULL", clist_current(list) == NULL, cleanup);
   cleanup();  // Cleanup of empty list works.
   return NULL;
 }
 
-// char *test_append_works(void)
-// {
-//   struct List *list = malloc(sizeof(struct List));
-//   list_init(list, NULL);
-//   int value = 69;
-//   list_insert_after(list, list_head(list), &value);
-//   mu_test("Head is 69", *(int *)list->head->data == 69, cleanup);
-//   mu_test("Size is 1", list_size(list) == 1, cleanup);
-//   mu_test("Tail is head", list->tail == list->head, cleanup);
-//   
-//   // Inserting at tail.
-//   int value2 = 70;
-//   list_insert_after(list, list_tail(list), &value2);
-//   mu_test("Head is still 69", *(int *)list->head->data == 69, cleanup);
-//   mu_test("Size is 2", list_size(list) == 2, cleanup);
-//   mu_test("Tail 70", *((int *)list->tail->data) == 70, cleanup);
-// 
-//   // Inserting at tail again.
-//   int value3 = 71;
-//   list_insert_after(list, list_tail(list), &value3);
-//   mu_test("Head is still 69", *(int *)list->head->data == 69, cleanup);
-//   mu_test("Size is 3", list_size(list) == 3, cleanup);
-//   mu_test("Tail 71", *((int *)list->tail->data) == 71, cleanup);
-// 
-//   // Inserting at head.
-//   int value4 = 68;
-//   list_insert_after(list, NULL, &value4);
-//   mu_test("Head is now 68", *(int *)list->head->data == 68, cleanup);
-//   mu_test("Size is 4", list_size(list) == 4, cleanup);
-//   mu_test("Tail 71", *((int *)list->tail->data) == 71, cleanup);
-// 
-//   // Inserting in middle.
-//   double value5 = 69.5;
-//   list_insert_after(list, list->head->next, &value5);
-//   mu_test("Head is still 68", *(int *)list->head->data == 68, cleanup);
-//   mu_test("New element is at pos", 
-//           *(double *)list->head->next->next->data == 69.5, 
-//           cleanup);
-//   mu_test("Size is 5", list_size(list) == 5, cleanup);
-//   mu_test("Tail 71", *(int *)list->tail->data == 71, cleanup);
-//   cleanup();  // Cleanup of filled list works.
-//   return NULL;
-// }
+char *test_append_works(void)
+{
+  struct CList *list = malloc(sizeof(struct CList));
+  clist_init(list, NULL);
+  int value = 69;
+  clist_insert_after(list, clist_current(list), &value);
+  mu_test("Current is 69", *(int *)list->curr->data == 69, cleanup);
+  mu_test("Next is self", list->curr == list->curr->next, cleanup);
+  mu_test("Size is 1", clist_size(list) == 1, cleanup);
+  
+  // Inserting at current.
+  int value2 = 70;
+  clist_insert_after(list, clist_current(list), &value2);
+  mu_test("Current is still 69", *(int *)list->curr->data == 69, cleanup);
+  mu_test("Size is 2", clist_size(list) == 2, cleanup);
+  mu_test("Tail 70", *((int *)list->curr->next->data) == 70, cleanup);
+  mu_test("wraps to 69", *((int *)list->curr->next->next->data) == 69, cleanup);
+
+  // Inserting at tail again.
+  int value3 = 71;
+  clist_insert_after(list, clist_current(list)->next, &value3);
+  mu_test("Head is still 69", *(int *)list->curr->data == 69, cleanup);
+  mu_test("Size is 3", clist_size(list) == 3, cleanup);
+  mu_test("Tail 71", *((int *)list->curr->next->next->data) == 71, cleanup);
+  mu_test(
+      "wraps to 69", 
+      *((int *)list->curr->next->next->next->data) == 69, 
+      cleanup);
+
+  // // Inserting at curr.
+  int value4 = 68;
+  clist_insert_after(list, list->curr->next->next, &value4);
+  mu_test("Tail 68", *((int *)list->curr->next->next->next->data) == 68, cleanup);
+
+  cleanup();  // Cleanup of filled list works.
+  return NULL;
+}
 // 
 // char *test_remove_works(void)
 // {
@@ -95,7 +89,7 @@ char *test_init_works(void)
 void all_tests(void)
 {
   mu_run_test(test_init_works);
-  // mu_run_test(test_append_works);
+  mu_run_test(test_append_works);
   // mu_run_test(test_remove_works);
   // mu_run_test(test_destructor_works);
 }
