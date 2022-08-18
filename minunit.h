@@ -1,5 +1,9 @@
 #include <stdio.h>
 
+#define MU_NO_CLEANUP() do { \
+  (void) 0; \
+} while (0)
+
 // Runs a test and prints the message if it fails
 //
 // @param message The name of the test / message to send when the test fails.

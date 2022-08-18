@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cc -Wall -Wextra -Werror split_test.c split.c -o split
+
+[[ -f "split" ]] && ./split
+[[ -f "split" ]] && rm split
