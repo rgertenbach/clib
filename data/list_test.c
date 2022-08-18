@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "list.h"
-#include "minunit.h"
+#include "../test/minunit.h"
 
 
 // Tests accessing the Data structure's internals.

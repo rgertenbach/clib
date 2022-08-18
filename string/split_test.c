@@ -3,7 +3,7 @@
 #include <string.h>
 #include <limits.h>
 
-#include "../minunit.h"
+#include "../test/minunit.h"
 #include "split.h"
 
 #define MAXLEN 4
