@@ -6,16 +6,18 @@
 
 bool pass;
 
-int test1(void)
+char *test1(void)
 {
-  mu_test("One must equal itself", 1 == 1);
+  mu_test("One must equal itself", 1 == 1, MU_NO_CLEANUP);
+  return NULL;
 }
 
-int test2(void)
+char *test2(void)
 {
   int expected = 2;
   int actual = pass ? 2 : 1;
-  mu_test("2 must equal itself", expected == actual);
+  mu_test("2 must equal itself", expected == actual, MU_NO_CLEANUP);
+  return NULL;
 }
 
 void all_tests(void)
