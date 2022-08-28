@@ -1,0 +1,11 @@
+#/bin/bash
+
+filename='flags_demo'
+cc -Wall -Wextra -Werror \
+     -o "${filename}" \
+     "flags.c" "../string/split.c" "${filename}.c"
+
+if [[ -f "${filename}" ]]; then
+  "./${filename}"
+  rm "${filename}"
+fi
