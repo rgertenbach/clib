@@ -48,7 +48,7 @@ static void flag_destroy(Flag *flag)
 }
 
 static Flag *flags_get(FlagPool const * const flags,
-    char const * const name)
+                       char const * const name)
 {
   for (size_t i = 0; i < flags->sz; ++i) {
     Flag * flag = flags->flags + i;
@@ -90,8 +90,8 @@ extern void flags_add_string(FlagPool * const flags,
   FlagValue value;
   value.string_value = default_value;
   flag_init(flags->flags + flags->sz, FLAG_TYPE_STRING, names, value, help);
+  flags->sz++;
 }
-
 
 extern char * flags_get_string(FlagPool const * const flags,
                                char const * const name)
