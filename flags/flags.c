@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,6 +6,7 @@
 
 #include "../string/split.h"
 #include "flags.h"
+
 
 // Decls
 
@@ -17,6 +19,17 @@ typedef struct FlagsFlagPool FlagPool;
 static bool flag_has_name(Flag const * const flag,
                           char const * const name);
 
+// Common params for all flags_add_* functions.
+//
+// @param type The third arguments, must be supprted in FlagsFlagType.
+#define add_params(type) struct FlagsFlagPool * const flags, \
+                         char const * const names, \
+                         type default_value, \
+                         char const * const help
+
+// Common params for all flags_get_* functions.
+#define get_params struct FlagsFlagPool const * const flags, \
+                   char const * const name
 
 // Declare optional FLAGS that refers to this via macro (0?)
 // static Flag **flags = malloc(FLAGS_MAX_FLAGS * sizeof(Flag *));
@@ -48,26 +61,37 @@ static void flag_destroy(Flag *flag)
   free(flag->help);
   for (size_t i = 0; i < flag->n_names; ++i) free(flag->names[i]);
   free(flag->names);
-  free(flag);
 }
 
 static Flag *flags_get(FlagPool const * const flags,
                        char const * const name)
 {
   for (size_t i = 0; i < flags->sz; ++i) {
-    Flag * flag = flags->flags + i;
+    Flag *flag = flags->flags + i;
     if (flag_has_name(flag, name)) return flag;
   }
   fprintf(stderr, "Flag \"%s\" not does not exist\n", name);
-  return NULL;
+  abort();
 }
 
-static void flags_set(Flag * const flag, void *value)
+static void flags_add(FlagPool *flags, 
+                      FlagType type, 
+                      char const * const names,
+                      FlagValue value,
+                      char const * const help)
+{
+  flag_init(flags->flags + flags->sz++, type, names, value, help);
+}
+
+static void flags_set(Flag * const flag, char *value)
 {
   FlagValue flag_value;
   switch (flag->type) {
     case FLAG_TYPE_STRING: 
-      flag_value.string_value = (char *) value; 
+      flag_value.string_value = value; 
+      break;
+    case FLAG_TYPE_INT64: 
+      flag_value.int64_value = strtoll(value, NULL, 10);
       break;
     default: 
       fprintf(stderr, "%s has an unsupported flag type\n", flag->names[0]); 
@@ -100,25 +124,33 @@ extern void flags_flag_pool_destroy(FlagPool *flags)
   free(flags);
 }
 
-extern void flags_add_string(FlagPool * const flags,
-                             char const * const names, 
-                             char *default_value, 
-                             char const * const help)
+// Use flags_set?
+extern void flags_add_string(add_params(char *))
 {
   FlagValue value;
   value.string_value = default_value;
-  flag_init(flags->flags + flags->sz, FLAG_TYPE_STRING, names, value, help);
-  flags->sz++;
+  flags_add(flags, FLAG_TYPE_STRING, names, value, help);
 }
 
-extern char *flags_get_string(FlagPool const * const flags,
-                              char const * const name)
+extern char *flags_get_string(get_params)
 {
-  Flag const * const flag = flags_get(flags, name);
-  // TODO: Validate type?
-  return (flag == NULL) ? NULL : flag->value.string_value;
+  return flags_get(flags, name)->value.string_value;
 }
 
+extern void flags_add_int64(add_params(int64_t))
+{
+  FlagValue value;
+  value.int64_value = default_value;
+  flags_add(flags, FLAG_TYPE_INT64, names, value, help);
+}
+
+extern int64_t flags_get_int64(get_params)
+{
+  return flags_get(flags, name)->value.int64_value;
+}
+
+#undef add_params
+#undef get_params
 
 void flags_parse_flags(FlagPool *flags,
                        int argc,
@@ -141,3 +173,5 @@ void flags_parse_flags(FlagPool *flags,
     flags_set(flag, argv[++i]);
   }
 }
+
+// TODO: Validate type?
