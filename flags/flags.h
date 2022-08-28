@@ -42,4 +42,7 @@ void flags_add_string(struct FlagsFlagPool * const flags,
 char *flags_get_string(struct FlagsFlagPool const * const flags,
                        char const * const name);
 
+void flags_parse_flags(struct FlagsFlagPool *flags,
+                       int argc,
+                       char **argv);
 #endif

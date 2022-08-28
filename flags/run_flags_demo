@@ -6,6 +6,6 @@ cc -Wall -Wextra -Werror \
      "flags.c" "../string/split.c" "${filename}.c"
 
 if [[ -f "${filename}" ]]; then
-  "./${filename}"
+  "./${filename}" -i "user supplied flag"
   rm "${filename}"
 fi

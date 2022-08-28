@@ -6,6 +6,8 @@
 #include "../string/split.h"
 #include "flags.h"
 
+// Decls
+
 typedef enum FlagsFlagType FlagType;
 typedef union FlagsFlagValue FlagValue;
 typedef struct FlagsFlag Flag;
@@ -19,6 +21,8 @@ static bool flag_has_name(Flag const * const flag,
 // Declare optional FLAGS that refers to this via macro (0?)
 // static Flag **flags = malloc(FLAGS_MAX_FLAGS * sizeof(Flag *));
 // size_t nflags = 0;
+
+// Internal functions
 
 static Flag *flag_init(Flag *flag,
                        FlagType const flag_type,
@@ -58,6 +62,20 @@ static Flag *flags_get(FlagPool const * const flags,
   return NULL;
 }
 
+static void flags_set(Flag * const flag, void *value)
+{
+  FlagValue flag_value;
+  switch (flag->type) {
+    case FLAG_TYPE_STRING: 
+      flag_value.string_value = (char *) value; 
+      break;
+    default: 
+      fprintf(stderr, "%s has an unsupported flag type\n", flag->names[0]); 
+      break;
+  }
+  flag->value = flag_value;
+}
+
 static bool flag_has_name(Flag const * const flag,
                           char const * const name)
 {
@@ -93,8 +111,8 @@ extern void flags_add_string(FlagPool * const flags,
   flags->sz++;
 }
 
-extern char * flags_get_string(FlagPool const * const flags,
-                               char const * const name)
+extern char *flags_get_string(FlagPool const * const flags,
+                              char const * const name)
 {
   Flag const * const flag = flags_get(flags, name);
   // TODO: Validate type?
@@ -102,4 +120,24 @@ extern char * flags_get_string(FlagPool const * const flags,
 }
 
 
-// CUrrent issue: does flagpool->flag contain Flags or Flag*s?
+void flags_parse_flags(FlagPool *flags,
+                       int argc,
+                       char **argv)
+{
+  Flag *flag;
+  for (size_t i = 1; i < (size_t) argc; ++i) {  // 0 is program name.
+    flag = flags_get(flags, argv[i]);
+    if (flag == NULL) {
+      if (*argv[i] == '-') fprintf(stderr, "WARNING: %s is a but not a flag", argv[i]);
+      continue;
+    }
+    // Treat bool and non-bool differently.
+    // Currently assumes space separated and <flag> <value>
+    if (i == (size_t) (argc - 1)) {
+      fprintf(stderr, "No value provided for %s\n", argv[i]);
+      exit(1);
+    }
+
+    flags_set(flag, argv[++i]);
+  }
+}

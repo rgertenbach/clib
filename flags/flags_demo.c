@@ -15,9 +15,9 @@ int main(int argc, char **argv)
   flags_flag_pool_init(flags, 10);
 
   flags_add_string(flags, "-i --input_file", "hello", "some help");
-  printf("'%s'\n", flags->flags[0].names[1]);
-
+  flags_parse_flags(flags, argc, argv);
   printf("%s\n", flags_get_string(flags, "--input_file"));
+
 
   flags_flag_pool_destroy(flags);
   return 0;
