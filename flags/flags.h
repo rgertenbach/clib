@@ -9,12 +9,18 @@
 
 enum FlagsFlagType {
   FLAG_TYPE_STRING = 1,
-  FLAG_TYPE_INT64 = 2
+  FLAG_TYPE_INT64 = 2,
+  FLAG_TYPE_INT32 = 3,
+  FLAG_TYPE_INT16 = 3,
+  FLAG_TYPE_INT8 = 3,
 };
 
 union FlagsFlagValue {
   char *string_value;
   int64_t int64_value;
+  int32_t int32_value;
+  int16_t int16_value;
+  int8_t int8_value;
 };
 
 struct FlagsFlag {
@@ -59,6 +65,15 @@ char *flags_get_string(get_params);
 
 void flags_add_int64(add_params(int64_t));
 int64_t flags_get_int64(get_params);
+
+void flags_add_int32(add_params(int32_t));
+int32_t flags_get_int32(get_params);
+
+void flags_add_int16(add_params(int16_t));
+int16_t flags_get_int16(get_params);
+
+void flags_add_int8(add_params(int8_t));
+int8_t flags_get_int8(get_params);
 
 #undef add_params
 #undef get_params

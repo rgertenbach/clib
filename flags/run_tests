@@ -1,0 +1,12 @@
+#!/bin/bash
+
+filename="flags_test"
+
+cc -Wall -Wextra -Werror -o "${filename}" \
+     "${filename}.c" flags.c ../string/split.c
+
+
+if [[ -f ${filename} ]]; then
+  "./${filename}"
+  rm "${filename}"
+fi

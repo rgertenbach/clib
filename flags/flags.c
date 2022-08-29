@@ -124,7 +124,10 @@ extern void flags_flag_pool_destroy(FlagPool *flags)
   free(flags);
 }
 
+// Flags setting and getting
+
 // Use flags_set?
+
 extern void flags_add_string(add_params(char *))
 {
   FlagValue value;
@@ -147,6 +150,42 @@ extern void flags_add_int64(add_params(int64_t))
 extern int64_t flags_get_int64(get_params)
 {
   return flags_get(flags, name)->value.int64_value;
+}
+
+extern void flags_add_int32(add_params(int32_t))
+{
+  FlagValue value;
+  value.int32_value = default_value;
+  flags_add(flags, FLAG_TYPE_INT32, names, value, help);
+}
+
+extern int32_t flags_get_int32(get_params)
+{
+  return flags_get(flags, name)->value.int32_value;
+}
+
+extern void flags_add_int16(add_params(int16_t))
+{
+  FlagValue value;
+  value.int16_value = default_value;
+  flags_add(flags, FLAG_TYPE_INT16, names, value, help);
+}
+
+extern int16_t flags_get_int16(get_params)
+{
+  return flags_get(flags, name)->value.int16_value;
+}
+
+extern void flags_add_int8(add_params(int8_t))
+{
+  FlagValue value;
+  value.int8_value = default_value;
+  flags_add(flags, FLAG_TYPE_INT8, names, value, help);
+}
+
+extern int8_t flags_get_int8(get_params)
+{
+  return flags_get(flags, name)->value.int8_value;
 }
 
 #undef add_params
