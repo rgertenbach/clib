@@ -2,17 +2,24 @@
 #define FLAGS_H
 
 #include <inttypes.h>
+#include <stdbool.h>
 
+// You can provide a short and/or a long form.
 #define FLAGS_MAX_NAMES 2
-#define FLAGS_MAX_NAME_LEN 32
+
+// Don't make your flag names too long.
+#define FLAGS_MAX_NAME_LEN 64
+
+// Keep your help short.
 #define FLAGS_MAX_HELP_LEN 1024
 
 enum FlagsFlagType {
   FLAG_TYPE_STRING = 1,
   FLAG_TYPE_INT64 = 2,
   FLAG_TYPE_INT32 = 3,
-  FLAG_TYPE_INT16 = 3,
-  FLAG_TYPE_INT8 = 3,
+  FLAG_TYPE_INT16 = 4,
+  FLAG_TYPE_INT8 = 5,
+  FLAG_TYPE_BOOL = 6,
 };
 
 union FlagsFlagValue {
@@ -21,6 +28,7 @@ union FlagsFlagValue {
   int32_t int32_value;
   int16_t int16_value;
   int8_t int8_value;
+  bool bool_value;
 };
 
 struct FlagsFlag {
@@ -74,6 +82,9 @@ int16_t flags_get_int16(get_params);
 
 void flags_add_int8(add_params(int8_t));
 int8_t flags_get_int8(get_params);
+
+void flags_add_bool(add_params(bool));
+bool flags_get_bool(get_params);
 
 #undef add_params
 #undef get_params

@@ -7,6 +7,7 @@
 #include "../string/split.h"
 #include "flags.h"
 
+#define max(a, b) ((a) > (b) ? (a) : (b))
 
 // Decls
 
@@ -18,6 +19,7 @@ typedef struct FlagsFlagPool FlagPool;
 
 static bool flag_has_name(Flag const * const flag,
                           char const * const name);
+
 
 // Common params for all flags_add_* functions.
 //
@@ -31,11 +33,20 @@ static bool flag_has_name(Flag const * const flag,
 #define get_params struct FlagsFlagPool const * const flags, \
                    char const * const name
 
-// Declare optional FLAGS that refers to this via macro (0?)
-// static Flag **flags = malloc(FLAGS_MAX_FLAGS * sizeof(Flag *));
-// size_t nflags = 0;
-
 // Internal functions
+
+bool is_short_name(char const * const name)
+{
+  return *name == '-' && name[1] != '-' && name[2] == '\0';
+}
+
+// Assumes the names already match.
+bool parse_bool_flag_value(Flag *flag, char *name)
+{
+  // We only support long names.
+  char *flagname = is_short_name(flag->names[0]) ? flag->names[1] : flag->names[0];
+  return !strcmp(flagname, name);  // Must be equal (true) or longer (false).
+}
 
 static Flag *flag_init(Flag *flag,
                        FlagType const flag_type,
@@ -70,6 +81,13 @@ static Flag *flags_get(FlagPool const * const flags,
     Flag *flag = flags->flags + i;
     if (flag_has_name(flag, name)) return flag;
   }
+  // We need to make sure a flag with the actual name doesn't exist before
+  // overwriting wit no-.
+  if (!strncmp(name, "--no-", 5)) {
+    char truthy_name[FLAGS_MAX_NAME_LEN] = "--";
+    strcpy(truthy_name + 2, name + 5);
+    return flags_get(flags, truthy_name);
+  }
   fprintf(stderr, "Flag \"%s\" not does not exist\n", name);
   abort();
 }
@@ -80,7 +98,7 @@ static void flags_add(FlagPool *flags,
                       FlagValue value,
                       char const * const help)
 {
-  flag_init(flags->flags + flags->sz++, type, names, value, help);
+  flag_init(flags->flags + (flags->sz++), type, names, value, help);
 }
 
 static void flags_set(Flag * const flag, char *value)
@@ -92,6 +110,18 @@ static void flags_set(Flag * const flag, char *value)
       break;
     case FLAG_TYPE_INT64: 
       flag_value.int64_value = strtoll(value, NULL, 10);
+      break;
+    case FLAG_TYPE_INT32: 
+      flag_value.int32_value = strtol(value, NULL, 10);
+      break;
+    case FLAG_TYPE_INT16: 
+      flag_value.int16_value = strtol(value, NULL, 10);
+      break;
+    case FLAG_TYPE_INT8: 
+      flag_value.int8_value = strtol(value, NULL, 10);
+      break;
+    case FLAG_TYPE_BOOL: 
+      flag_value.bool_value = parse_bool_flag_value(flag, value);
       break;
     default: 
       fprintf(stderr, "%s has an unsupported flag type\n", flag->names[0]); 
@@ -105,6 +135,9 @@ static bool flag_has_name(Flag const * const flag,
 {
   for (size_t i = 0; i < flag->n_names; ++i) {
     if (strcmp(flag->names[i], name) == 0) return true;
+    if (flag->type == FLAG_TYPE_BOOL 
+        && strncmp(flag->names[i], "no-", 3) 
+        && strcmp(flag->names[i] + 3, name) == 0) return true;
   }
   return false;
 }
@@ -188,6 +221,18 @@ extern int8_t flags_get_int8(get_params)
   return flags_get(flags, name)->value.int8_value;
 }
 
+extern void flags_add_bool(add_params(bool))
+{
+  FlagValue value;
+  value.bool_value = default_value;
+  flags_add(flags, FLAG_TYPE_BOOL, names, value, help);
+}
+
+extern bool flags_get_bool(get_params)
+{
+  return flags_get(flags, name)->value.bool_value;
+}
+
 #undef add_params
 #undef get_params
 
@@ -202,14 +247,19 @@ void flags_parse_flags(FlagPool *flags,
       if (*argv[i] == '-') fprintf(stderr, "WARNING: %s is a but not a flag", argv[i]);
       continue;
     }
-    // Treat bool and non-bool differently.
-    // Currently assumes space separated and <flag> <value>
-    if (i == (size_t) (argc - 1)) {
-      fprintf(stderr, "No value provided for %s\n", argv[i]);
-      exit(1);
-    }
+    switch (flag->type) {
+      case FLAG_TYPE_BOOL:
+        flags_set(flag, argv[i]);
+        break;
 
-    flags_set(flag, argv[++i]);
+      default:
+        if (i == (size_t) (argc - 1)) {
+          fprintf(stderr, "No value provided for %s\n", argv[i]);
+          exit(1);
+        }
+        flags_set(flag, argv[++i]);
+        break;
+    }
   }
 }
 
