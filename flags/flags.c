@@ -35,17 +35,21 @@ static bool flag_has_name(Flag const * const flag,
 
 // Internal functions
 
-bool is_short_name(char const * const name)
-{
-  return *name == '-' && name[1] != '-' && name[2] == '\0';
-}
-
 // Assumes the names already match.
-bool parse_bool_flag_value(Flag *flag, char *name)
+static bool parse_bool_flag_value(char const * name)
 {
-  // We only support long names.
-  char *flagname = is_short_name(flag->names[0]) ? flag->names[1] : flag->names[0];
-  return !strcmp(flagname, name);  // Must be equal (true) or longer (false).
+  if (strlen(name) < 2) {
+    fprintf(stderr, "'%s' too short a name\n", name);
+    exit(1);
+  }
+  bool val = true;
+  char const * p = name + 2;  // Skip 2
+
+  while (!strncmp(p, "no-", 3)) {
+    val = !val;
+    p += 3;
+  }
+  return val;
 }
 
 static Flag *flag_init(Flag *flag,
@@ -121,7 +125,7 @@ static void flags_set(Flag * const flag, char *value)
       flag_value.int8_value = strtol(value, NULL, 10);
       break;
     case FLAG_TYPE_BOOL: 
-      flag_value.bool_value = parse_bool_flag_value(flag, value);
+      flag_value.bool_value = parse_bool_flag_value(value);
       break;
     default: 
       fprintf(stderr, "%s has an unsupported flag type\n", flag->names[0]); 
@@ -223,6 +227,14 @@ extern int8_t flags_get_int8(get_params)
 
 extern void flags_add_bool(add_params(bool))
 {
+  if (strstr(names, "--no")) {
+    fprintf(
+        stderr, 
+        "Do not prefix bool flags with 'no-', "
+        "give the truthy name and set a default (got '%s').\n",
+        names);
+    exit(1);
+  }
   FlagValue value;
   value.bool_value = default_value;
   flags_add(flags, FLAG_TYPE_BOOL, names, value, help);
@@ -262,5 +274,3 @@ void flags_parse_flags(FlagPool *flags,
     }
   }
 }
-
-// TODO: Validate type?

@@ -83,6 +83,12 @@ int16_t flags_get_int16(get_params);
 void flags_add_int8(add_params(int8_t));
 int8_t flags_get_int8(get_params);
 
+// Passes true with flag-name and false with no-flag-name.
+// Boolean flags should be named with the truthy value.
+// That means if you have a variable use-stuff add a flag
+// use-stuff not no-use-stuff.
+// Flags cam be negated multiple times at parsing, e.g.,
+// --no-no-no-flag sets it to false.
 void flags_add_bool(add_params(bool));
 bool flags_get_bool(get_params);
 
