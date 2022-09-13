@@ -43,3 +43,7 @@ int tests_failed = 0;
   if (tests_failed) printf("%d tests failed\n", tests_failed); \
   else printf("All tests pass! :)\n"); \
 } while (0)
+
+#define mu_abs(x) (((x) < 0) ? -(x) : (x))
+
+#define mu_approx_equal(a, b, epsilon) (mu_abs((a) - (b)) < epsilon)
