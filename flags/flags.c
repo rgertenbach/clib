@@ -127,6 +127,9 @@ static void flags_set(Flag * const flag, char *value)
     case FLAG_TYPE_BOOL: 
       flag_value.bool_value = parse_bool_flag_value(value);
       break;
+    case FLAG_TYPE_FLOAT:
+      flag_value.float_value = strtof(value, NULL);
+      break;
     default: 
       fprintf(stderr, "%s has an unsupported flag type\n", flag->names[0]); 
       break;
@@ -243,6 +246,18 @@ extern void flags_add_bool(add_params(bool))
 extern bool flags_get_bool(get_params)
 {
   return flags_get(flags, name)->value.bool_value;
+}
+
+extern void flags_add_float(add_params(float))
+{
+  FlagValue value;
+  value.float_value = default_value;
+  flags_add(flags, FLAG_TYPE_FLOAT, names, value, help);
+}
+
+extern float flags_get_float(get_params)
+{
+  return flags_get(flags, name)->value.float_value;
 }
 
 #undef add_params

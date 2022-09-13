@@ -9,6 +9,7 @@
   flags_flag_pool_destroy(flags); \
 } while (0)
 
+#define abs(a) (((a) < 0) ? -(a) : (a))
 
 char *test_string(void)
 {
@@ -198,6 +199,31 @@ char *test_bool(void)
   return NULL;
 }
 
+char *test_float(void)
+{
+  struct FlagsFlagPool *flags = malloc(sizeof(struct FlagsFlagPool));
+  flags_flag_pool_init(flags, 2);
+
+  flags_add_float(flags, "--name -n", 12.1, "help");
+  float val = flags_get_float(flags, "-n");
+  mu_test("Default is '12.1'", abs(val - 12.1) < 0.01, cleanup);
+
+  char **argv = malloc(3 * sizeof(char *));
+  for (size_t i = 0; i < 3; ++i) {
+    argv[i] = malloc(20);
+  }
+  strcpy(argv[0], "argv[0]");
+  strcpy(argv[1], "--name");
+  strcpy(argv[2], "52.1");
+
+  flags_parse_flags(flags, 3, argv);
+
+  val = flags_get_float(flags, "-n");
+  mu_test("Override is '52.1'", abs(val - 52.1) < 0.01, cleanup);
+
+  cleanup();
+  return NULL;
+}
 #undef nflags
 #undef argc
 #undef bool_cleanup
@@ -210,6 +236,7 @@ void all_tests(void)
   mu_run_test(test_int16);
   mu_run_test(test_int8);
   mu_run_test(test_bool);
+  mu_run_test(test_float);
 }
 
 int main(void)
