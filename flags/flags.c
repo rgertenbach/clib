@@ -130,6 +130,9 @@ static void flags_set(Flag * const flag, char *value)
     case FLAG_TYPE_FLOAT:
       flag_value.float_value = strtof(value, NULL);
       break;
+    case FLAG_TYPE_DOUBLE:
+      flag_value.double_value = strtod(value, NULL);
+      break;
     default: 
       fprintf(stderr, "%s has an unsupported flag type\n", flag->names[0]); 
       break;
@@ -258,6 +261,18 @@ extern void flags_add_float(add_params(float))
 extern float flags_get_float(get_params)
 {
   return flags_get(flags, name)->value.float_value;
+}
+
+extern void flags_add_double(add_params(double))
+{
+  FlagValue value;
+  value.double_value = default_value;
+  flags_add(flags, FLAG_TYPE_DOUBLE, names, value, help);
+}
+
+extern double flags_get_double(get_params)
+{
+  return flags_get(flags, name)->value.double_value;
 }
 
 #undef add_params

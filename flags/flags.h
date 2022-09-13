@@ -21,6 +21,7 @@ enum FlagsFlagType {
   FLAG_TYPE_INT8 = 5,
   FLAG_TYPE_BOOL = 6,
   FLAG_TYPE_FLOAT = 7,
+  FLAG_TYPE_DOUBLE = 8,
 };
 
 union FlagsFlagValue {
@@ -31,6 +32,7 @@ union FlagsFlagValue {
   int8_t int8_value;
   bool bool_value;
   float float_value;
+  double double_value;
 };
 
 struct FlagsFlag {
@@ -96,6 +98,9 @@ bool flags_get_bool(get_params);
 
 void flags_add_float(add_params(float));
 float flags_get_float(get_params);
+
+void flags_add_double(add_params(double));
+double flags_get_double(get_params);
 
 #undef add_params
 #undef get_params
