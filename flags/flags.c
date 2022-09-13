@@ -133,6 +133,9 @@ static void flags_set(Flag * const flag, char *value)
     case FLAG_TYPE_DOUBLE:
       flag_value.double_value = strtod(value, NULL);
       break;
+    case FLAG_TYPE_LONG_DOUBLE:
+      flag_value.long_double_value = strtold(value, NULL);
+      break;
     default: 
       fprintf(stderr, "%s has an unsupported flag type\n", flag->names[0]); 
       break;
@@ -273,6 +276,18 @@ extern void flags_add_double(add_params(double))
 extern double flags_get_double(get_params)
 {
   return flags_get(flags, name)->value.double_value;
+}
+
+extern void flags_add_long_double(add_params(long double))
+{
+  FlagValue value;
+  value.long_double_value = default_value;
+  flags_add(flags, FLAG_TYPE_LONG_DOUBLE, names, value, help);
+}
+
+extern long double flags_get_long_double(get_params)
+{
+  return flags_get(flags, name)->value.long_double_value;
 }
 
 #undef add_params
