@@ -68,17 +68,38 @@ static Flag *flag_init(Flag *flag,
 
   flag->type = flag_type;
   flag->value = value;
+  flag->list_sz = 0;
   return flag;
+}
+
+static bool is_list_type(Flag const * const flag)
+{
+  switch (flag->type) {
+    case FLAG_TYPE_STRING_LIST:
+      return true;
+      break;
+    default:
+      return false;
+      break;
+  }
 }
 
 static void flag_destroy(Flag *flag)
 {
   free(flag->help);
   for (size_t i = 0; i < flag->n_names; ++i) free(flag->names[i]);
+  if (is_list_type(flag)) {
+    if (flag->type == FLAG_TYPE_STRING_LIST) {
+      for (size_t j = 0; j < FLAGS_MAX_LIST_LEN; ++j) {
+        free(flag->value.string_list_value[j]);
+      }
+    }
+    free(flag->value.string_list_value);
+  }
   free(flag->names);
 }
 
-static Flag *flags_get(FlagPool const * const flags,
+extern Flag *flags_get(FlagPool const * const flags,
                        char const * const name)
 {
   for (size_t i = 0; i < flags->sz; ++i) {
@@ -96,13 +117,15 @@ static Flag *flags_get(FlagPool const * const flags,
   abort();
 }
 
-static void flags_add(FlagPool *flags, 
+static Flag *flags_add(FlagPool *flags, 
                       FlagType type, 
                       char const * const names,
                       FlagValue value,
                       char const * const help)
 {
-  flag_init(flags->flags + (flags->sz++), type, names, value, help);
+  Flag *flag = flags->flags + (flags->sz++);
+  flag_init(flag, type, names, value, help);
+  return flag;
 }
 
 static void flags_set(Flag * const flag, char *value)
@@ -290,6 +313,26 @@ extern long double flags_get_long_double(get_params)
   return flags_get(flags, name)->value.long_double_value;
 }
 
+extern void flags_add_string_list(add_params(char *))
+{
+  FlagValue value;
+  value.string_list_value = malloc(FLAGS_MAX_LIST_LEN * sizeof(char *));
+  for (size_t i = 0; i < FLAGS_MAX_LIST_LEN; ++i) {
+    value.string_list_value[i] = malloc(FLAGS_MAX_STRLIST_ELEM_LEN);
+  }
+  size_t list_sz = strnsplit(
+      value.string_list_value, default_value, ",",
+      FLAGS_MAX_LIST_LEN, FLAGS_MAX_STRLIST_ELEM_LEN);
+
+  Flag *flag = flags_add(flags, FLAG_TYPE_LONG_DOUBLE, names, value, help);
+  flag->list_sz = list_sz;
+}
+
+extern char **flags_get_string_list(get_params)
+{
+  return flags_get(flags, name)->value.string_list_value;
+}
+
 #undef add_params
 #undef get_params
 
@@ -318,4 +361,9 @@ void flags_parse_flags(FlagPool *flags,
         break;
     }
   }
+}
+
+extern size_t flags_list_size(struct FlagsFlag const * const flag)
+{
+  return flag->list_sz;
 }

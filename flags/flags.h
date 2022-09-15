@@ -13,6 +13,12 @@
 // Keep your help short.
 #define FLAGS_MAX_HELP_LEN 1024
 
+#define FLAGS_MAX_LIST_LEN 1024
+#define FLAGS_MAX_STRLIST_ELEM_LEN 256
+
+// TODO:
+// - vargs
+// - lists
 enum FlagsFlagType {
   FLAG_TYPE_STRING = 1,
   FLAG_TYPE_INT64 = 2,
@@ -23,6 +29,7 @@ enum FlagsFlagType {
   FLAG_TYPE_FLOAT = 7,
   FLAG_TYPE_DOUBLE = 8,
   FLAG_TYPE_LONG_DOUBLE = 9,
+  FLAG_TYPE_STRING_LIST = 10,
 };
 
 union FlagsFlagValue {
@@ -35,6 +42,7 @@ union FlagsFlagValue {
   float float_value;
   double double_value;
   long double long_double_value;
+  char **string_list_value;
 };
 
 struct FlagsFlag {
@@ -43,6 +51,7 @@ struct FlagsFlag {
   char *help;
   enum FlagsFlagType type;
   union FlagsFlagValue value;
+  size_t list_sz;
 };
 
 struct FlagsFlagPool {
@@ -107,7 +116,15 @@ double flags_get_double(get_params);
 void flags_add_long_double(add_params(long double));
 long double flags_get_long_double(get_params);
 
+void flags_add_string_list(add_params(char *));
+char **flags_get_string_list(get_params);
+
 #undef add_params
 #undef get_params
+
+struct FlagsFlag *flags_get(struct FlagsFlagPool const * const flags, 
+                            char const * const name);
+
+size_t flags_list_size(struct FlagsFlag const * const flag);
 
 #endif

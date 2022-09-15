@@ -277,6 +277,39 @@ char *test_long_double(void)
   return NULL;
 }
 
+char *test_string_list(void)
+{
+  struct FlagsFlagPool *flags = malloc(sizeof(struct FlagsFlagPool));
+  flags_flag_pool_init(flags, 2);
+
+  flags_add_string_list(flags, "--name -n", "Text1,Text2", "help");
+  char **value = flags_get_string_list(flags, "--name");
+  struct FlagsFlag *flag = flags_get(flags, "--name");
+  mu_test("Flag has 2 elements", flags_list_size(flag) == 2, cleanup);
+  mu_test("First element is Text1", !strcmp(value[0], "Text1"), cleanup);
+  mu_test("Second element is Text2", !strcmp(value[1], "Text2"), cleanup);
+
+  char **argv = malloc(3 * sizeof(char *));
+  for (size_t i = 0; i < 3; ++i) {
+    argv[i] = malloc(20);
+  }
+  strcpy(argv[0], "argv[0]");
+  strcpy(argv[1], "--name");
+  strcpy(argv[2], "NewText1,NewText2,NewText3");
+
+  flags_parse_flags(flags, 3, argv);
+
+  value = flags_get_string_list(flags, "--name");
+  // Segfaults, free old memory on parse and read properly
+  // mu_test("Flag has 3 elements", flags_list_size(flag) == 2, cleanup);
+  // mu_test("First element is NewText1", !strcmp(value[0], "NewText1"), cleanup);
+  // mu_test("Second element is NewText2", !strcmp(value[1], "NewText2"), cleanup);
+  // mu_test("Third element is NewText3", !strcmp(value[2], "NewText3"), cleanup);
+
+  cleanup();
+  return NULL;
+}
+
 #undef nflags
 #undef argc
 #undef bool_cleanup
@@ -292,6 +325,7 @@ void all_tests(void)
   mu_run_test(test_float);
   mu_run_test(test_double);
   mu_run_test(test_long_double);
+  mu_run_test(test_string_list);
 }
 
 int main(void)
