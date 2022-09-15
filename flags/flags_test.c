@@ -291,7 +291,7 @@ char *test_string_list(void)
 
   char **argv = malloc(3 * sizeof(char *));
   for (size_t i = 0; i < 3; ++i) {
-    argv[i] = malloc(20);
+    argv[i] = malloc(40);
   }
   strcpy(argv[0], "argv[0]");
   strcpy(argv[1], "--name");
@@ -300,11 +300,10 @@ char *test_string_list(void)
   flags_parse_flags(flags, 3, argv);
 
   value = flags_get_string_list(flags, "--name");
-  // Segfaults, free old memory on parse and read properly
-  // mu_test("Flag has 3 elements", flags_list_size(flag) == 2, cleanup);
-  // mu_test("First element is NewText1", !strcmp(value[0], "NewText1"), cleanup);
-  // mu_test("Second element is NewText2", !strcmp(value[1], "NewText2"), cleanup);
-  // mu_test("Third element is NewText3", !strcmp(value[2], "NewText3"), cleanup);
+  mu_test("Flag has 3 elements", flags_list_size(flag) == 3, cleanup);
+  mu_test("First element is NewText1", !strcmp(value[0], "NewText1"), cleanup);
+  mu_test("Second element is NewText2", !strcmp(value[1], "NewText2"), cleanup);
+  mu_test("Third element is NewText3", !strcmp(value[2], "NewText3"), cleanup);
 
   cleanup();
   return NULL;

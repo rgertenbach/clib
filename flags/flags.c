@@ -90,11 +90,11 @@ static void flag_destroy(Flag *flag)
   for (size_t i = 0; i < flag->n_names; ++i) free(flag->names[i]);
   if (is_list_type(flag)) {
     if (flag->type == FLAG_TYPE_STRING_LIST) {
-      for (size_t j = 0; j < FLAGS_MAX_LIST_LEN; ++j) {
-        free(flag->value.string_list_value[j]);
+      while (flag->list_sz-- > 0) {
+        free(flag->value.string_list_value[flag->list_sz]); 
       }
+      free(flag->value.string_list_value);
     }
-    free(flag->value.string_list_value);
   }
   free(flag->names);
 }
@@ -130,40 +130,46 @@ static Flag *flags_add(FlagPool *flags,
 
 static void flags_set(Flag * const flag, char *value)
 {
-  FlagValue flag_value;
   switch (flag->type) {
     case FLAG_TYPE_STRING: 
-      flag_value.string_value = value; 
+      flag->value.string_value = value; 
       break;
     case FLAG_TYPE_INT64: 
-      flag_value.int64_value = strtoll(value, NULL, 10);
+      flag->value.int64_value = strtoll(value, NULL, 10);
       break;
     case FLAG_TYPE_INT32: 
-      flag_value.int32_value = strtol(value, NULL, 10);
+      flag->value.int32_value = strtol(value, NULL, 10);
       break;
     case FLAG_TYPE_INT16: 
-      flag_value.int16_value = strtol(value, NULL, 10);
+      flag->value.int16_value = strtol(value, NULL, 10);
       break;
     case FLAG_TYPE_INT8: 
-      flag_value.int8_value = strtol(value, NULL, 10);
+      flag->value.int8_value = strtol(value, NULL, 10);
       break;
     case FLAG_TYPE_BOOL: 
-      flag_value.bool_value = parse_bool_flag_value(value);
+      flag->value.bool_value = parse_bool_flag_value(value);
       break;
     case FLAG_TYPE_FLOAT:
-      flag_value.float_value = strtof(value, NULL);
+      flag->value.float_value = strtof(value, NULL);
       break;
     case FLAG_TYPE_DOUBLE:
-      flag_value.double_value = strtod(value, NULL);
+      flag->value.double_value = strtod(value, NULL);
       break;
     case FLAG_TYPE_LONG_DOUBLE:
-      flag_value.long_double_value = strtold(value, NULL);
+      flag->value.long_double_value = strtold(value, NULL);
+      break;
+    case FLAG_TYPE_STRING_LIST:
+      flag->list_sz = strnsplit(
+          flag->value.string_list_value, 
+          value, 
+          ",",
+          FLAGS_MAX_LIST_LEN, 
+          FLAGS_MAX_STRLIST_ELEM_LEN);
       break;
     default: 
       fprintf(stderr, "%s has an unsupported flag type\n", flag->names[0]); 
       break;
   }
-  flag->value = flag_value;
 }
 
 static bool flag_has_name(Flag const * const flag,
@@ -324,7 +330,7 @@ extern void flags_add_string_list(add_params(char *))
       value.string_list_value, default_value, ",",
       FLAGS_MAX_LIST_LEN, FLAGS_MAX_STRLIST_ELEM_LEN);
 
-  Flag *flag = flags_add(flags, FLAG_TYPE_LONG_DOUBLE, names, value, help);
+  Flag *flag = flags_add(flags, FLAG_TYPE_STRING_LIST, names, value, help);
   flag->list_sz = list_sz;
 }
 
@@ -351,7 +357,6 @@ void flags_parse_flags(FlagPool *flags,
       case FLAG_TYPE_BOOL:
         flags_set(flag, argv[i]);
         break;
-
       default:
         if (i == (size_t) (argc - 1)) {
           fprintf(stderr, "No value provided for %s\n", argv[i]);
