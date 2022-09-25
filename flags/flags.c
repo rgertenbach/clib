@@ -372,3 +372,17 @@ extern size_t flags_list_size(struct FlagsFlag const * const flag)
 {
   return flag->list_sz;
 }
+
+extern int flags_fprint_help(FILE * restrict stream,
+                             FlagPool const * const flags)
+{
+  (void) stream;
+  (void) flags;
+  int result = 0;
+  return result;
+}
+
+extern int flags_print_help(FlagPool const * const flags)
+{
+  return flags_fprint_help(stdout, flags);
+}
