@@ -309,6 +309,28 @@ char *test_string_list(void)
   return NULL;
 }
 
+#define cleanup_help() do { \
+  free(help); \
+  cleanup(); \
+} while (0)
+
+
+char *test_generate_help(void)
+{
+  struct FlagsFlagPool *flags = malloc(sizeof(struct FlagsFlagPool));
+  flags_flag_pool_init(flags, 2);
+
+  flags_add_string(flags, "--name -n", "default", "help");
+  flags_add_string(flags, "-o --other-flag", "default_value", "help2");
+  char *help = malloc(1e5);
+  char *expected = "Flags:\n--name, -n\n\thelp\n-o, --other-flag\n\thelp2\n";
+  flags_generate_help(help, flags);
+  mu_test("Help matches", !strcmp(help, expected), cleanup_help);
+
+  cleanup_help();    
+  return NULL;
+}
+
 #undef nflags
 #undef argc
 #undef bool_cleanup
@@ -325,6 +347,7 @@ void all_tests(void)
   mu_run_test(test_double);
   mu_run_test(test_long_double);
   mu_run_test(test_string_list);
+  mu_run_test(test_generate_help);
 }
 
 int main(void)

@@ -371,6 +371,23 @@ void flags_parse_flags(FlagPool *flags,
 extern size_t flags_list_size(struct FlagsFlag const * const flag)
 {
   return flag->list_sz;
+} 
+
+extern void flags_generate_help(char * dest,
+                                FlagPool const * const flags)
+{
+  dest += sprintf(dest, "Flags:\n");
+  for (size_t flagi = 0; flagi < flags->sz; ++flagi) {
+    Flag const * const flag = flags->flags + flagi;
+    for (size_t namei = 0; namei < flag->n_names; ++namei) {
+      if (namei) dest += sprintf(dest, ", ");
+      dest += sprintf(dest, "%s", flag->names[namei]);
+    }
+    if (flag->help != NULL) dest += sprintf(dest, "\n\t%s", flag->help);
+    dest += sprintf(dest, "\n");
+  }
+
+  *dest = '\0';
 }
 
 extern int flags_fprint_help(FILE * restrict stream,
@@ -379,6 +396,10 @@ extern int flags_fprint_help(FILE * restrict stream,
   (void) stream;
   (void) flags;
   int result = 0;
+  char * help = malloc(1e5);
+  flags_generate_help(help, flags);
+  fprintf(stream, "%s", help);
+  free(help);
   return result;
 }
 

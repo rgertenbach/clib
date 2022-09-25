@@ -127,6 +127,8 @@ struct FlagsFlag *flags_get(struct FlagsFlagPool const * const flags,
 
 size_t flags_list_size(struct FlagsFlag const * const flag);
 
+void flags_generate_help(char * dest,
+                         struct FlagsFlagPool const * const flags);
 int flags_fprint_help(FILE * restrict stream, 
                       struct FlagsFlagPool const * const flags);
 int flags_print_help(struct FlagsFlagPool const * const flags);
