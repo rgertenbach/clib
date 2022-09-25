@@ -2,6 +2,6 @@
 
 cc -Wall -Wextra -Werror minunit_demo.c -o minunit_demo
 
-[[ -f minunit_demo ]] && ./minunit_demo $1
+[[ -f minunit_demo ]] && ./minunit_demo "$1"
 [[ -f minunit_demo ]] && rm minunit_demo
 
