@@ -86,6 +86,8 @@ char *test_strnsplit_too_short_elems(void)
   char **dest;
   setup();
   size_t n = strnsplit(dest, "foobar,bazbim", ",", 4, 4);
+  // TODO: Flaky test, passes with the right debug message but returns 4 otherwise.
+  fprintf(stderr, "short test: @%zu %s | %s | %s\n", n, dest[0], dest[1], dest[2]);
   mu_test("Extracted two elements", n == 2, cleanup);
   mu_test("1st Element is \"foo\"", strcmp(dest[0], "foo") == 0, cleanup);
   mu_test("2nd Element is \"baz\"", strcmp(dest[1], "baz") == 0, cleanup);
@@ -168,6 +170,50 @@ char *test_strsplit_no_delimiter(void)
   return NULL;
 }
 
+char *test_strfind(void)
+{
+  char *arr[] = {"Text1", "Text2", "Text3"};
+  mu_test(
+      "Text1 is at 0", 
+      strfind("Text1", (char const * const * const) arr, 3) == 0,
+      MU_NO_CLEANUP);
+  mu_test(
+      "Text2 is at 1", 
+      strfind("Text2", (char const * const * const) arr, 3) == 1,
+      MU_NO_CLEANUP);
+  mu_test(
+      "Text3 is at 0", 
+      strfind("Text3", (char const * const * const) arr, 3) == 2,
+      MU_NO_CLEANUP);
+  mu_test(
+      "Text4 is at -1", 
+      strfind("Text4", (char const * const * const) arr, 3) == -1,
+      MU_NO_CLEANUP);
+  return NULL;
+}
+
+char *test_strin(void)
+{
+  char *arr[] = {"Text1", "Text2", "Text3"};
+  mu_test(
+      "Text1 is in", 
+      strin("Text1", (char const * const * const) arr, 3),
+      MU_NO_CLEANUP);
+  mu_test(
+      "Text2 is in", 
+      strin("Text2", (char const * const * const) arr, 3),
+      MU_NO_CLEANUP);
+  mu_test(
+      "Text3 is in", 
+      strin("Text3", (char const * const * const) arr, 3),
+      MU_NO_CLEANUP);
+  mu_test(
+      "Text4 is not in", 
+      !strin("Text4", (char const * const * const) arr, 3),
+      MU_NO_CLEANUP);
+  return NULL;
+}
+
 void all_tests(void)
 {
   mu_run_test(test_unlimited_strnsplit_single_elem);
@@ -185,6 +231,9 @@ void all_tests(void)
   mu_run_test(test_strsplit_ignore_trailing_delimiter);
   mu_run_test(test_strsplit_two_elems_long_delimiter);
   mu_run_test(test_strsplit_no_delimiter);
+
+  mu_run_test(test_strfind);
+  mu_run_test(test_strin);
 }
 
 int main(int argc, char **argv)

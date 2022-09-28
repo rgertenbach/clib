@@ -20,8 +20,9 @@ size_t strnsplit(char ** const dest,
   size_t n = 0;
   size_t len = 0;
   size_t const delim_len = strlen(delim);
+  size_t i = 0;
 
-  for (size_t i = 0; s[i] != '\0'; ++i) {
+  for (; s[i] != '\0'; ++i) {
     if (len == maxlen - 1 || (len && strncmp(s + i, delim, delim_len) == 0)) {
       dest[n++][len] = '\0';
       len = 0;              
@@ -34,7 +35,21 @@ size_t strnsplit(char ** const dest,
       dest[n][len++] = s[i];
     }
   }
-  if (len) dest[n++][len] = '\0';
+  if (len && s[i] == '\0') dest[n++][len] = '\0';
   return n;
 }
 
+int strfind(char const * const s,
+            char const * const * const arr,
+            size_t const n)
+{
+  for (size_t i = 0; i < n; ++i) if (!strcmp(s, arr[i])) return i;
+  return -1;
+}
+
+bool strin(char const * const s,
+           char const * const * const arr,
+           size_t const n)
+{
+  return strfind(s, arr, n) >= 0;
+}
