@@ -331,6 +331,55 @@ char *test_generate_help(void)
   return NULL;
 }
 
+char *test_set_help_names(void)
+{
+  struct FlagsFlagPool *flags = malloc(sizeof(struct FlagsFlagPool));
+  flags_flag_pool_init(flags, 2);
+
+  mu_test(
+      "In the beginning there are default help flags", 
+      flags->n_help_names == 2,
+      cleanup);
+  mu_test(
+      "In the beginning there are default help flags", 
+      !strcmp(flags->help_names[0], "-h"),
+      cleanup);
+  mu_test(
+      "In the beginning there are default help flags", 
+      !strcmp(flags->help_names[1], "--help"),
+      cleanup);
+
+  flags_set_help(flags, NULL);
+  mu_test("After NULL we have no help names", flags->n_help_names == 0, cleanup);
+  mu_test("After NULL we have NULL help names", flags->help_names == NULL, cleanup);
+
+  // Again to check override behavior.
+  flags_set_help(flags, NULL);
+  mu_test("After NULL we have no help names", flags->n_help_names == 0, cleanup);
+  mu_test("After NULL we have NULL help names", flags->help_names == NULL, cleanup);
+
+  flags_set_help(flags, "--flag1");
+  mu_test("After flag1 we have one help name", flags->n_help_names == 1, cleanup);
+  mu_test("After flag1 the flag name is --flag1", !strcmp(flags->help_names[0], "--flag1"), cleanup);
+
+  flags_set_help(flags, "-g --flag2");
+  mu_test(
+      "After -g --flag2 we have two help names", 
+      flags->n_help_names == 2,
+      cleanup);
+  mu_test(
+      "After -g --flag2 the first flag name is -g", 
+      !strcmp(flags->help_names[0], "-g"), 
+      cleanup);
+  mu_test(
+      "After -g --flag2 the second flag name is --flag2", 
+      !strcmp(flags->help_names[1], "--flag2"),
+      cleanup);
+
+  cleanup();
+  return NULL;
+}
+
 #undef nflags
 #undef argc
 #undef bool_cleanup
@@ -348,6 +397,7 @@ void all_tests(void)
   mu_run_test(test_long_double);
   mu_run_test(test_string_list);
   mu_run_test(test_generate_help);
+  mu_run_test(test_set_help_names);
 }
 
 int main(void)

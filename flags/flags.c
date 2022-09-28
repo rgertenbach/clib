@@ -191,12 +191,37 @@ extern void flags_flag_pool_init(FlagPool * const flags,
 {
   flags->flags = malloc(max_size * sizeof(Flag));
   flags->sz = 0;
+
+  flags->n_help_names = 0;
+  flags_set_help(flags, "-h --help");
 }
 
 extern void flags_flag_pool_destroy(FlagPool *flags)
 {
   for (size_t i = 0; i < flags->sz; ++i) flag_destroy(flags->flags + i);
+  flags_set_help(flags, NULL);
   free(flags);
+}
+
+// Passing NULL also frees everything related to the names.
+extern void flags_set_help(FlagPool * const flags, char const * const names)
+{
+  // Destroy names if NULL
+  if (names == NULL) {
+    if (flags->n_help_names == 0) return;
+    for (size_t i = 0; i < FLAGS_MAX_NAMES; ++i) free(flags->help_names[i]);
+    free(flags->help_names);
+    flags->help_names = NULL;
+    flags->n_help_names = 0;
+    return;
+  }
+  
+  if (flags->n_help_names > 0) flags_set_help(flags, NULL);
+  flags->help_names = malloc(FLAGS_MAX_NAMES * sizeof(char *));
+  for (size_t i = 0; i < FLAGS_MAX_NAMES; ++i) {
+    flags->help_names[i] = malloc(FLAGS_MAX_NAME_LEN);
+  }
+  flags->n_help_names = strnsplit(flags->help_names, names, " ", 2, FLAGS_MAX_NAME_LEN-1);
 }
 
 // Flags setting and getting

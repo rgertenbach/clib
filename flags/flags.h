@@ -3,6 +3,8 @@
 
 #include <inttypes.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 // You can provide a short and/or a long form.
 #define FLAGS_MAX_NAMES 2
@@ -57,6 +59,8 @@ struct FlagsFlag {
 struct FlagsFlagPool {
   struct FlagsFlag *flags;
   size_t sz;
+  char **help_names;
+  size_t n_help_names;
 };
 
 void flags_flag_pool_init(struct FlagsFlagPool * const flags,
@@ -67,6 +71,15 @@ void flags_flag_pool_destroy(struct FlagsFlagPool *flags);
 void flags_parse_flags(struct FlagsFlagPool *flags,
                        int argc,
                        char **argv);
+
+// Set which passed flag calls the help.
+//
+// @param flags The flagpool.
+// @param names A space separated list of flags that, when passed just opens
+//   the help no matter what else what's passed.
+//   Defaults to "-h --help". Pass NULL to delete.
+void flags_set_help(struct FlagsFlagPool * const flags, 
+                    char const * const names);
 
 
 // Common params for all flags_add_* functions.
@@ -129,7 +142,7 @@ size_t flags_list_size(struct FlagsFlag const * const flag);
 
 void flags_generate_help(char * dest,
                          struct FlagsFlagPool const * const flags);
-int flags_fprint_help(FILE * restrict stream, 
+int flags_fprint_help(FILE * stream, 
                       struct FlagsFlagPool const * const flags);
 int flags_print_help(struct FlagsFlagPool const * const flags);
 
