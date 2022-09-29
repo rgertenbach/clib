@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cc -Wall -Wextra -Werror arr_test.c arr.c -o arr
+
+[[ -f "arr" ]] && ./arr
+[[ -f "arr" ]] && rm arr
