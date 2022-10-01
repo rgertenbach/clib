@@ -99,6 +99,15 @@ static void flag_destroy(Flag *flag)
   free(flag->names);
 }
 
+static bool is_help_name(FlagPool const * const flags,
+                         char const * const name)
+{
+  for (size_t i = 0; i < flags->n_help_names; ++i) {
+    if (!strcmp(name, flags->help_names[i])) return true;
+  }
+  return false;
+}
+
 extern Flag *flags_get(FlagPool const * const flags,
                        char const * const name)
 {
@@ -373,6 +382,10 @@ void flags_parse_flags(FlagPool *flags,
 {
   Flag *flag;
   for (size_t i = 1; i < (size_t) argc; ++i) {  // 0 is program name.
+    if (is_help_name(flags, argv[i])) {
+      flags_print_help(flags);
+      exit(0);
+    }
     flag = flags_get(flags, argv[i]);
     if (flag == NULL) {
       if (*argv[i] == '-') fprintf(stderr, "WARNING: %s is a but not a flag", argv[i]);

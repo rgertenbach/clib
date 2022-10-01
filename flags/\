@@ -10,9 +10,6 @@ cc -Wall -Wextra -Werror -o "${dir}/${filename}" \
 cd "${dir}"
 
 if [[ -f ${filename} ]]; then
-  "./${filename}" -h
-
+  "./${filename}"
+  rm "${filename}"
 fi
-
-cd "${oldpwd}"
-rm -r "${dir}"
