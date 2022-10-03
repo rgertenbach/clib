@@ -44,6 +44,18 @@ int tests_failed = 0;
   else printf("All tests pass! :)\n"); \
 } while (0)
 
+// The absolute value of an expression.
 #define mu_abs(x) (((x) < 0) ? -(x) : (x))
 
+// Checks for equality between a and b within a certain error epsilon.
+// This is to account for floating point errors.
 #define mu_approx_equal(a, b, epsilon) (mu_abs((a) - (b)) < epsilon)
+
+// Checks for exact equality.
+#define mu_test_equal(message, expected, actual, cleanup) do { \
+  if ((expected) != (actual)) { \
+    char *mu_result = message " should be " #expected " but isn't"; \
+    cleanup(); \
+    return mu_result; \
+  } \
+} while (0)
