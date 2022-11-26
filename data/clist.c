@@ -97,7 +97,7 @@ bool clist_remove_after(struct CList *list,
     fprintf(stderr, "List must not be empty\n");
     return false;
   }
-  if (list == NULL && clist_size(list) > 0) {
+  if (after == NULL && clist_size(list) > 0) {
     fprintf(stderr, "List has elements, after must not be NULL\n");
     return false;
   }

@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdlib.h>
 #include "clist.h"
 #include "../test/minunit.h"
@@ -9,89 +10,86 @@
   free(list); \
 } while (0)
 
+bool clist_equals(struct CList * list,
+                  int const * const expected,
+                  size_t const n)
+{
+  struct CListElement *head = clist_current(list);
+  struct CListElement *current = clist_current(list);
+  if (clist_size(list) != n) return false;
+  for (size_t i = 0; i < n; ++i) {
+    if (*(int *)clist_data(current) != expected[i]) return false;
+    if (i && current == head) return false;
+    current = current->next;
+  }
+  return current == head;
+}
+
 char *test_init_works(void)
 {
   struct CList *list = malloc(sizeof(struct CList));
   clist_init(list, NULL);
-  mu_test("List should have size 0", clist_size(list) == 0, cleanup);
-  mu_test("List's current should be NULL", clist_current(list) == NULL, cleanup);
+  mu_test("List is []", clist_equals(list, NULL, 0), cleanup);
   cleanup();  // Cleanup of empty list works.
   return NULL;
 }
 
 char *test_append_works(void)
 {
+  int expected[10] = {69, 70, 71, 68};
   struct CList *list = malloc(sizeof(struct CList));
   clist_init(list, NULL);
   int value = 69;
   clist_insert_after(list, clist_current(list), &value);
-  mu_test("Current is 69", *(int *)list->curr->data == 69, cleanup);
-  mu_test("Next is self", list->curr == list->curr->next, cleanup);
-  mu_test("Size is 1", clist_size(list) == 1, cleanup);
+  mu_test("List is [69]", clist_equals(list, expected, 1), cleanup);
   
   // Inserting at current.
   int value2 = 70;
   clist_insert_after(list, clist_current(list), &value2);
-  mu_test("Current is still 69", *(int *)list->curr->data == 69, cleanup);
-  mu_test("Size is 2", clist_size(list) == 2, cleanup);
-  mu_test("Tail 70", *((int *)list->curr->next->data) == 70, cleanup);
-  mu_test("wraps to 69", *((int *)list->curr->next->next->data) == 69, cleanup);
+  mu_test("List is [69,70]", clist_equals(list, expected, 2), cleanup);
 
-  // Inserting at tail again.
+  // Inserting at tail.
   int value3 = 71;
   clist_insert_after(list, clist_current(list)->next, &value3);
-  mu_test("Head is still 69", *(int *)list->curr->data == 69, cleanup);
-  mu_test("Size is 3", clist_size(list) == 3, cleanup);
-  mu_test("Tail 71", *((int *)list->curr->next->next->data) == 71, cleanup);
-  mu_test(
-      "wraps to 69", 
-      *((int *)list->curr->next->next->next->data) == 69, 
-      cleanup);
+  mu_test("List is [69,70,71]", clist_equals(list, expected, 3), cleanup);
 
-  // // Inserting at curr.
+  // // Inserting at tail.
   int value4 = 68;
   clist_insert_after(list, list->curr->next->next, &value4);
-  mu_test("Tail 68", *((int *)list->curr->next->next->next->data) == 68, cleanup);
+  mu_test("List is [69,70,71,68]", clist_equals(list, expected, 4), cleanup);
 
   cleanup();  // Cleanup of filled list works.
   return NULL;
 }
-// 
-// char *test_remove_works(void)
-// {
-//   int nums[] = {1, 2, 3, 4, 5};
-//   struct List *list = malloc(sizeof(struct List));
-//   list_init(list, NULL);
-//   for (size_t i = 0; i < 5; ++i) 
-//     list_insert_after(list, list_tail(list), &nums[i]);
-//   int *val;
-// 
-//   list_remove_after(list, NULL, (void **) &val);
-//   mu_test("Head is 1", *val == 1, cleanup);
-//   mu_test("New head is 2", *(int *)list->head->data == 2, cleanup);
-// 
-//   list_remove_after(list, list_next(list_head(list)), (void **) &val);
-//   mu_test("After middle is 4", *val == 4, cleanup);
-// 
-//   list_remove_after(list, list_next(list_head(list)), (void **) &val);
-//   mu_test("Tail is 5", *val == 5, cleanup);
-//   mu_test("New Tail is 3", *(int *)list_data(list_tail(list)) == 3, cleanup);
-// 
-//   cleanup();
-//   return NULL;
-// }
-// 
-// char *test_destructor_works(void)
-// {
-//   return NULL;
-// }
+
+char *test_remove_works(void)
+{
+  int nums[] = {1, 5, 4, 3, 2};
+  int expected[] = {1, 2, 3, 4, 5};
+  int *val = NULL;
+  struct CList *list = malloc(sizeof(struct CList));
+  clist_init(list, NULL);
+
+  mu_test("Remove from empty fails", !clist_remove_after(list, NULL, (void **)(&val)), cleanup);
+
+  for (size_t i = 0; i < 5; ++i) 
+    clist_insert_after(list, clist_current(list), (void *) &nums[i]);
+
+  mu_test("List is [1,2,3,4,5]", clist_equals(list, expected, 5), cleanup);
+
+  clist_remove_after(list, clist_current(list)->next->next->next, (void **)(&val));
+  mu_test("val is 1", *val == 5, cleanup);
+  mu_test("list is [1,2,3,4,5]", clist_equals(list, expected, 4), cleanup);
+
+  cleanup();
+  return NULL;
+}
 
 void all_tests(void)
 {
   mu_run_test(test_init_works);
   mu_run_test(test_append_works);
-  // mu_run_test(test_remove_works);
-  // mu_run_test(test_destructor_works);
+  mu_run_test(test_remove_works);
 }
 
 int main(int argc, char **argv)
