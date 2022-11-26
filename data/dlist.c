@@ -5,7 +5,10 @@
 
 #include "dlist.h"
 
-void dlist_init(struct Dlist *list, void (*destroy)(void *data))
+typedef struct Dlist Dlist;
+typedef struct DlistElement DlistElement;
+
+void dlist_init(Dlist *list, void (*destroy)(void *data))
 {
   list->size = 0;
   list->destroy = destroy;
@@ -13,7 +16,7 @@ void dlist_init(struct Dlist *list, void (*destroy)(void *data))
   list->tail = NULL;
 }
 
-void dlist_destroy(struct Dlist *list)
+void dlist_destroy(Dlist *list)
 {
   if (list == NULL) return;
   void *data = NULL;
@@ -25,51 +28,51 @@ void dlist_destroy(struct Dlist *list)
   memset(list, 0, sizeof(*list));
 }
 
-unsigned int dlist_size(struct Dlist const * const list)
+unsigned int dlist_size(Dlist const * const list)
 {
   return list->size;
 }
 
-struct DlistElement *dlist_head(struct Dlist *list)
+DlistElement *dlist_head(Dlist *list)
 {
   return list->head;
 }
 
-struct DlistElement *dlist_tail(struct Dlist *list)
+DlistElement *dlist_tail(Dlist *list)
 {
   return list->tail;
 }
 
-bool dlist_is_tail(struct DlistElement *element)
+bool dlist_is_tail(DlistElement *element)
 {
   return element->next == NULL;
 }
                       
-bool dlist_is_head(struct DlistElement *element)
+bool dlist_is_head(DlistElement *element)
 {
   return element->prev == NULL;
 }
 
-void *dlist_data(struct DlistElement *element)
+void *dlist_data(DlistElement *element)
 {
   return element->data;
 }
 
-struct DlistElement *dlist_next(struct DlistElement *element)
+DlistElement *dlist_next(DlistElement *element)
 {
   return element->next;
 }
 
 
-bool dlist_insert_after(struct Dlist *list, 
-                        struct DlistElement *after,
+bool dlist_insert_after(Dlist *list, 
+                        DlistElement *after,
                         void *data)
 {
   if (list == NULL) {
     fprintf(stderr, "List must not be NULL");
     return false;
   }
-  struct DlistElement *new = malloc(sizeof(struct DlistElement));
+  DlistElement *new = malloc(sizeof(DlistElement));
   if (new == NULL) {
     fprintf(stderr, "No space to allocate new element");
     return false;
@@ -88,15 +91,15 @@ bool dlist_insert_after(struct Dlist *list,
   return true;
 }
 
-bool dlist_insert_before(struct Dlist *list, 
-                         struct DlistElement *before,
+bool dlist_insert_before(Dlist *list, 
+                         DlistElement *before,
                          void *data)
 {
   if (list == NULL) {
     fprintf(stderr, "List must not be NULL");
     return false;
   }
-  struct DlistElement *new = malloc(sizeof(struct DlistElement));
+  DlistElement *new = malloc(sizeof(DlistElement));
   if (new == NULL) {
     fprintf(stderr, "No space to allocate new element");
     return false;
@@ -117,8 +120,8 @@ bool dlist_insert_before(struct Dlist *list,
   return true;
 }
  
-bool dlist_remove(struct Dlist *list, 
-                  struct DlistElement *element, 
+bool dlist_remove(Dlist *list, 
+                  DlistElement *element, 
                   void **data)
 {
   if (list == NULL) {

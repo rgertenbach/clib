@@ -20,10 +20,18 @@ char *test2(void)
   return NULL;
 }
 
+char *test3(void)
+{
+  int actual = pass ? 4 : 5;
+  mu_test_equal("msg", 4, actual, MU_NO_CLEANUP);
+  return NULL;
+}
+
 void all_tests(void)
 {
   mu_run_test(test1);
   mu_run_test(test2);
+  mu_run_test(test3);
 }
 
 int main(int argc, char **argv)

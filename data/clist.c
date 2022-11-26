@@ -5,19 +5,22 @@
 
 #include "clist.h"
 
-void clist_init(struct CList *list, void (*destroy)(void *data))
+typedef struct CList CList;
+typedef struct CListElement CListElement;
+
+void clist_init(CList *list, void (*destroy)(void *data))
 {
   list->size = 0;
   list->destroy = destroy;
   list->curr = NULL;
 }
 
-void clist_destroy(struct CList *list)
+void clist_destroy(CList *list)
 {
   if (list == NULL) return;
   void *data = NULL;
-  struct CListElement *curr = list->curr;
-  struct CListElement *next = NULL;
+  CListElement *curr = list->curr;
+  CListElement *next = NULL;
   // force an end
   if (curr != NULL) {
     next = curr->next;
@@ -35,31 +38,31 @@ void clist_destroy(struct CList *list)
   memset(list, 0, sizeof(*list));
 }
 
-unsigned int clist_size(struct CList const * const list)
+unsigned int clist_size(CList const * const list)
 {
   return list->size;
 }
 
-struct CListElement *clist_current(struct CList *list)
+CListElement *clist_current(CList *list)
 {
   return list->curr;
 }
 
-bool clist_is_current(struct CList *list,
-                      struct CListElement *element)
+bool clist_is_current(CList *list,
+                      CListElement *element)
 {
   return element == list->curr;
 }
 
-bool clist_insert_after(struct CList *list, 
-                        struct CListElement *after,
+bool clist_insert_after(CList *list, 
+                        CListElement *after,
                         void *data)
 {
   if (list == NULL) {
     fprintf(stderr, "List must not be NULL");
     return false;
   }
-  struct CListElement *new = malloc(sizeof(struct CListElement));
+  CListElement *new = malloc(sizeof(CListElement));
   if (new == NULL) {
     fprintf(stderr, "No space to allocate new element");
     return false;
@@ -85,8 +88,8 @@ bool clist_insert_after(struct CList *list,
   return true;
 }
 
-bool clist_remove_after(struct CList *list,
-                        struct CListElement *after,
+bool clist_remove_after(CList *list,
+                        CListElement *after,
                         void **data)
 {
   if (list == NULL) {
@@ -101,7 +104,7 @@ bool clist_remove_after(struct CList *list,
     fprintf(stderr, "List has elements, after must not be NULL\n");
     return false;
   }
-  struct CListElement *target;
+  CListElement *target;
   target = after->next;
   if (clist_size(list) == 1) {
     list->curr = NULL;
@@ -115,12 +118,12 @@ bool clist_remove_after(struct CList *list,
   return true;
 }
 
-void *clist_data(struct CListElement *element)
+void *clist_data(CListElement *element)
 {
   return element->data;
 }
 
-struct CListElement *clist_next(struct CListElement *element)
+CListElement *clist_next(CListElement *element)
 {
   return element->next;
 }

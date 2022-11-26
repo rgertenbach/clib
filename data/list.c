@@ -5,7 +5,10 @@
 
 #include "list.h"
 
-void list_init(struct List *list, void (*destroy)(void *data))
+typedef struct List List;
+typedef struct ListElement ListElement;
+
+void list_init(List *list, void (*destroy)(void *data))
 {
   list->size = 0;
   list->destroy = destroy;
@@ -13,7 +16,7 @@ void list_init(struct List *list, void (*destroy)(void *data))
   list->tail = NULL;
 }
 
-void list_destroy(struct List *list)
+void list_destroy(List *list)
 {
   if (list == NULL) return;
   void *data = NULL;
@@ -25,30 +28,30 @@ void list_destroy(struct List *list)
   memset(list, 0, sizeof(*list));
 }
 
-unsigned int list_size(struct List const * const list)
+unsigned int list_size(List const * const list)
 {
   return list->size;
 }
 
-struct ListElement *list_head(struct List *list)
+ListElement *list_head(List *list)
 {
   return list->head;
 }
 
-struct ListElement *list_tail(struct List *list)
+ListElement *list_tail(List *list)
 {
   return list->tail;
 }
 
-bool list_insert_after(struct List *list, 
-                       struct ListElement *after,
+bool list_insert_after(List *list, 
+                       ListElement *after,
                        void *data)
 {
   if (list == NULL) {
     fprintf(stderr, "List must not be NULL");
     return false;
   }
-  struct ListElement *new = malloc(sizeof(struct ListElement));
+  ListElement *new = malloc(sizeof(ListElement));
   if (new == NULL) {
     fprintf(stderr, "No space to allocate new element");
     return false;
@@ -66,15 +69,15 @@ bool list_insert_after(struct List *list,
   return true;
 }
 
-bool list_remove_after(struct List *list,
-                       struct ListElement *after,
+bool list_remove_after(List *list,
+                       ListElement *after,
                        void **data)
 {
   if (list == NULL) {
     fprintf(stderr, "List must not be NULL\n");
     return false;
   }
-  struct ListElement *target;
+  ListElement *target;
   if (after == NULL) {  // Remove head.
     target = list->head;
     if (target != NULL) list->head = target->next;
@@ -93,23 +96,23 @@ bool list_remove_after(struct List *list,
   return true;
 }
 
-bool list_is_tail(struct ListElement *element)
+bool list_is_tail(ListElement *element)
 {
   return element->next == NULL;
 }
                       
-bool list_is_head(struct List *list,
-                  struct ListElement *element)
+bool list_is_head(List *list,
+                  ListElement *element)
 {
   return element == list->head;
 }
 
-void *list_data(struct ListElement *element)
+void *list_data(ListElement *element)
 {
   return element->data;
 }
 
-struct ListElement *list_next(struct ListElement *element)
+ListElement *list_next(ListElement *element)
 {
   return element->next;
 }
