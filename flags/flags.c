@@ -431,8 +431,6 @@ extern void flags_generate_help(char * dest,
 extern int flags_fprint_help(FILE * restrict stream,
                              FlagPool const * const flags)
 {
-  (void) stream;
-  (void) flags;
   int result = 0;
   char * help = malloc(1e5);
   flags_generate_help(help, flags);
