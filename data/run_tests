@@ -4,3 +4,4 @@ echo "${name}"
 ./test_dlist
 ./test_clist
 ./test_stack
+./test_queue

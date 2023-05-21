@@ -1,0 +1,5 @@
+#! /usr/bin/bash
+
+cc queue_test.c queue.c list.c -Wall -Wextra -o queue_test && \
+  ./queue_test && \
+  rm queue_test
