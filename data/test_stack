@@ -1,0 +1,5 @@
+#! /usr/bin/bash
+
+cc stack_test.c stack.c list.c -Wall -Wextra -o stack_test && \
+  ./stack_test && \
+  rm stack_test

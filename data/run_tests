@@ -3,3 +3,4 @@ echo "${name}"
 ./test_list
 ./test_dlist
 ./test_clist
+./test_stack
