@@ -11,6 +11,7 @@ struct ListElement {
 struct List {
   unsigned int size;
   void (*destroy)(void *data);
+  bool (*match)(void *a, void *b);
   struct ListElement *head;
   struct ListElement *tail;
 };

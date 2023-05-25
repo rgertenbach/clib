@@ -5,3 +5,4 @@ echo "${name}"
 ./test_clist
 ./test_stack
 ./test_queue
+./test_set

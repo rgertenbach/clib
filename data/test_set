@@ -1,0 +1,4 @@
+#! /usr/bin/bash
+cc set_test.c set.c list.c -Wall -Wextra -o set_test && \
+  ./set_test && \
+  rm set_test
