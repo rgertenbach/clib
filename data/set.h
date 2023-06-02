@@ -11,8 +11,8 @@
 #include "list.h"
 
 struct Set {
-  struct List list;
-  bool (*match)(void *a, void *b);
+  struct List list;  // Keep this as the first member.
+  bool (*match)(void const * const a, void const * const b);
 };
 
 // Initializes the set.
@@ -27,7 +27,7 @@ struct Set {
 void
 set_init(
     struct Set * set,
-    bool (*match) (const void *key1, const void *key2),
+    bool (*match) (void const * const key1, void const * const key2),
     void (*destroy) (void *data));
 
 // Deallocates a set and possibly the members.

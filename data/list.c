@@ -33,7 +33,7 @@ unsigned int list_size(List const * const list)
   return list->size;
 }
 
-ListElement *list_head(List *list)
+ListElement *list_head(List const * const list)
 {
   return list->head;
 }

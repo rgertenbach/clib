@@ -7,12 +7,19 @@ typedef struct Set Set;
 typedef struct List List;
 typedef struct ListElement LE;
 
-// TODO: Fix warnings
 static List *
-lst(Set const * const set)
+lst(Set * set)
 {
   return &(set->list);
 }
+
+static List const *
+clst(Set const * const set)
+{
+  return (List const *) &(set->list);
+}
+
+
  
 void
 set_init(
@@ -33,8 +40,8 @@ set_destroy(Set *set)
 bool
 set_insert(Set * const set, void *data)
 {
-  if (set_is_member(lst(set), data)) return true;
-  return list_insert_after(lst(set), list_tail(lst(set)), data); 
+  if (set_is_member(set, data)) return true;
+  return list_insert_after(lst(set), list_tail((List *) set), data); 
 }
 
 bool
@@ -46,7 +53,7 @@ set_remove(Set * const set, void **data)
     if (set->match(*data, list_data(member))) break;
     prev = member;
   }
-  if (member == NULL) return false;
+  if (member == NULL) return false;  // Not found.
   return list_remove_after(lst(set), prev, data);
 }
 
@@ -59,13 +66,13 @@ set_union(
   LE *member;
   void *data;
   set_init(set_u, set1->match, NULL);
-  for (member = list_head(lst(set1)); member != NULL; member = list_next(member)) {
+  for (member = list_head(clst(set1)); member != NULL; member = list_next(member)) {
     data = list_data(member);
-    if (!list_insert_after(set_u, list_tail(lst(set_u)), data)) {
+    if (!list_insert_after(lst(set_u), list_tail(lst(set_u)), data)) {
       set_destroy(set_u); return false;
     }
   }
-  for (member = list_head(lst(set2)); member != NULL; member = list_next(member)) {
+  for (member = list_head(clst(set2)); member != NULL; member = list_next(member)) {
     if (set_is_member(set1, list_data(member))) continue;
     data = list_data(member);
     if (!list_insert_after(lst(set_u), list_tail(lst(set_u)), data)) {
@@ -83,7 +90,7 @@ set_intersection(
 {
   set_init(set_i, set1->match, NULL);
   LE *member;
-  for (member = list_head(lst(set1)); member != NULL; member = list_next(member)) {
+  for (member = list_head(clst(set1)); member != NULL; member = list_next(member)) {
     if (set_is_member(set2, list_data(member))) {
       if (!set_insert(set_i, list_data(member))) {
         set_destroy(set_i);
@@ -102,7 +109,7 @@ set_difference(
 {
   set_init(set_d, set1->match, NULL);
   LE *member;
-  for (member = list_head(lst(set1)); member != NULL; member = list_next(member)) {
+  for (member = list_head(clst(set1)); member != NULL; member = list_next(member)) {
     if (!set_is_member(set2, list_data(member))) {
       if (!set_insert(set_d, list_data(member))) {
         set_destroy(set_d);
@@ -113,12 +120,11 @@ set_difference(
   return true;
 }
 
-
 bool
 set_is_member(Set const * const set, void const *data)
 {
   LE *member;
-  for (member = list_head(lst(set)); member != NULL; member = list_next(member)) {
+  for (member = list_head((List *) set); member != NULL; member = list_next(member)) {
     if (set->match(list_data(member), data)) return true;
   }
   return false;
@@ -129,7 +135,7 @@ set_is_subset(Set const *set1, Set const * const set2)
 {
   if (set_size(set2) > set_size(set1)) return false;
   LE *member;
-  for (member = list_head(lst(set2)); member != NULL; member = list_next(member)) {
+  for (member = list_head(clst(set2)); member != NULL; member = list_next(member)) {
     if (!set_is_member(set1, list_data(member))) return false;
   }
   return true;
@@ -140,7 +146,7 @@ set_is_equal(Set const *set1, Set const * const set2)
 {
   if (set_size(set1) != set_size(set2)) return false;
   LE *member;
-  for (member = list_head(lst(set1)); member != NULL; member = list_next(member)) {
+  for (member = list_head(clst(set1)); member != NULL; member = list_next(member)) {
     if (!set_is_member(set2, list_data(member))) return false;
   }
   return true;
@@ -149,6 +155,6 @@ set_is_equal(Set const *set1, Set const * const set2)
 unsigned int
 set_size(Set const * const set)
 {
-  return list_size(lst(set));
+  return list_size((List *) set);
 }
 

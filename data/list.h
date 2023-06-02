@@ -11,7 +11,6 @@ struct ListElement {
 struct List {
   unsigned int size;
   void (*destroy)(void *data);
-  bool (*match)(void *a, void *b);
   struct ListElement *head;
   struct ListElement *tail;
 };
@@ -24,14 +23,18 @@ struct List {
 // @param destory method to free the value of a list. For plain pointers this
 //   may be free, for more complex data the data type's destructor, for data
 //   that should not be free it should be NULL.
-void list_init(struct List *list, void (*destroy)(void *data));
+void
+list_init(
+    struct List *list, 
+    void (*destroy)(void *data));
 
 // Deallocates a linked list and possibly the members.
 //
 // The complexity is O(n) where n is the number of elements in the list.
 //
 // @param list The linked list to deallocate.
-void list_destroy(struct List *list);
+void
+list_destroy(struct List *list);
 
 // Inserts a new element just after element
 //
@@ -42,9 +45,11 @@ void list_destroy(struct List *list);
 //   will be the new head.
 // @param data A void pointer to the new data.
 // @return Whether the operation was a success or not.
-bool list_insert_after(struct List *list, 
-                       struct ListElement *element, 
-                       void *data);
+bool
+list_insert_after(
+    struct List *list, 
+    struct ListElement *element, 
+    void *data);
 
 // Deletes the element just after element.
 //
@@ -55,9 +60,11 @@ bool list_insert_after(struct List *list,
 // @param data will point to the element that was removed. Use NULL if the data
 //  should not be accessed.
 // @return Whether the operation was a success or not.
-bool list_remove_after(struct List *list,
-                       struct ListElement *element,
-                       void **data);
+bool
+list_remove_after(
+    struct List *list,
+    struct ListElement *element,
+    void **data);
 
 // The number of elements in the list.
 //
@@ -65,7 +72,8 @@ bool list_remove_after(struct List *list,
 //
 // @param list The list we want the length of.
 // @return THe size of the list.
-unsigned int list_size(const struct List *list);
+unsigned int
+list_size(struct List const * const list);
 
 // Returns the head of the linked list.
 //
@@ -73,7 +81,8 @@ unsigned int list_size(const struct List *list);
 //
 // @param list The linked list we want the head of.
 // @return A pointer to the element containing the value at the head.
-struct ListElement *list_head(struct List *list);
+struct ListElement *
+list_head(struct List const * const list);
 
 
 // Returns the tail of the linked list.
@@ -82,7 +91,8 @@ struct ListElement *list_head(struct List *list);
 //
 // @param list The linked list we want the tail of.
 // @return A pointer to the element containing the value at the tail.
-struct ListElement *list_tail(struct List *list);
+struct ListElement *
+list_tail(struct List *list);
 
 // Whether the element is at the head of a linked list.
 //
@@ -91,8 +101,10 @@ struct ListElement *list_tail(struct List *list);
 // @param list: The list to check for head-ness.
 // @param element: The Element to check.
 // @return Whether the element is at the head of its linked list.
-bool list_is_head(struct List *list, 
-                  struct ListElement *element);
+bool
+list_is_head(
+    struct List *list, 
+    struct ListElement *element);
 
 // Whether the element is at the tail of a linked list.
 //
@@ -100,7 +112,8 @@ bool list_is_head(struct List *list,
 // 
 // @param element: The ELement to check.
 // @return WHether the element is at the tail of its linked list.
-bool list_is_tail(struct ListElement *element);
+bool
+list_is_tail(struct ListElement *element);
 
 // Extracts the value contained by a Linked List element.
 //
@@ -108,7 +121,8 @@ bool list_is_tail(struct ListElement *element);
 //
 // @param element: The element to extract the value from.
 // @return A void pointer to the value.
-void *list_data(struct ListElement *element);
+void *
+list_data(struct ListElement *element);
 
 // The next element of a linked list after the element.
 //
@@ -116,6 +130,7 @@ void *list_data(struct ListElement *element);
 //
 // @param element The element of which we want the successor.
 // @return A pointer to the element following it.
-struct ListElement *list_next(struct ListElement *element);
+struct ListElement *
+list_next(struct ListElement *element);
 
 #endif
