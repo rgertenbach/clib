@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cc qksort_test.c qksort.c -Wall -Wextra
+./a.out
+rm a.out

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cc issort_test.c issort.c -Wall -Wextra
+./a.out
+rm a.out
