@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cc mgsort_test.c mgsort.c -Wall -Wextra
+./a.out
+rm a.out
