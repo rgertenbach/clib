@@ -1,0 +1,5 @@
+#! /usr/bin/bash
+
+cc chmap_test.c chmap.c list.c -Wall -Wextra -o chmap_test && \
+  ./chmap_test && \
+  rm chmap_test

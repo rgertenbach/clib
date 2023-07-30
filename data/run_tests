@@ -6,3 +6,4 @@ echo "${name}"
 ./test_stack
 ./test_queue
 ./test_set
+./test_chmap
