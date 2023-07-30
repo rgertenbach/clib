@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -71,9 +69,12 @@ partition(
   if (n <= 1) return true;
   size_t i = 0;
   size_t k = n - 1;
-  void * temp = malloc(size);
+  char * temp = malloc(2 * size);
+  char * pivot = temp + size;
   if (temp == NULL) return false;
-  void * const pivot = find_pivot3(bytes, n, size, comp);
+  memcpy(pivot, find_pivot3(bytes, n, size, comp), size);
+
+  // void * const pivot = find_pivot3(bytes, n, size, comp);
   while (i < k) {
     while (comp(bytes + (k * size), pivot) > 0) k--;
     while (comp(bytes + (i * size), pivot) < 0) i++;

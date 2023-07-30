@@ -46,8 +46,6 @@ test_sort2(void)
 {
   int data[] = {3, 5, 1, 4, 2};
   qksort(data, 5, sizeof(int), comp);
-  for(size_t i = 0; i < 5; ++i) printf("%d ", data[i]);
-  puts("\n");
   mu_test_equal("", 1, data[0], MU_NO_CLEANUP);
   mu_test_equal("", 2, data[1], MU_NO_CLEANUP);
   mu_test_equal("", 3, data[2], MU_NO_CLEANUP);
