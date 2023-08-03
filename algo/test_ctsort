@@ -1,0 +1,4 @@
+#!/bin/sh
+cc ctsort_test.c ctsort.c -Wall -Wextra
+./a.out
+rm a.out
