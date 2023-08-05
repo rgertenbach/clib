@@ -1,0 +1,5 @@
+#!/bin/sh
+
+clang rxsort_test.c rxsort.c -Wall -Wextra -lm
+./a.out
+rm a.out
