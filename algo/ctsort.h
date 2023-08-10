@@ -1,3 +1,6 @@
+#ifndef CTSORT_H
+#define CTSORT_H
+
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -10,3 +13,4 @@ ctsort(
     size_t const n,
     int const max);
 
+#endif

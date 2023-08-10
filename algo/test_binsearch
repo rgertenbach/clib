@@ -1,0 +1,4 @@
+#!/bin/sh
+clang binsearch_test.c binsearch.c -Wall -Wextra
+./a.out
+rm a.out
