@@ -160,3 +160,5 @@ set_first_element(struct Set * const set);
 //
 struct List *
 set_extract_list(struct Set * const set);
+
+#endif

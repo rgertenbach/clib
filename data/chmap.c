@@ -37,7 +37,7 @@ chmap_read(
     void const * target, 
     void **data)
 {
-  size_t const bucket = map->hash(target) % map->buckets;
+  size_t const bucket = map->hash(target) % map->n_buckets;
   struct ListElement * le = list_head(map->buckets[bucket]);
   while (le != NULL) {
     void * ld = list_data(le);
@@ -52,6 +52,6 @@ chmap_read(
 bool
 chmap_insert(struct CHMap *map, void * data)
 {
-  size_t const bucket = map->hash(data) % map->buckets;
-  list_insert_after(map->buckets[bucket], NULL, data);
+  size_t const bucket = map->hash(data) % map->n_buckets;
+  return list_insert_after(map->buckets[bucket], NULL, data);
 }

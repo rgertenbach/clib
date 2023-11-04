@@ -48,9 +48,8 @@ chmap_destroy(struct CHMap *map);
 // Inserts or overwrites the value.
 bool
 chmap_insert(
-    struct CHMap *map, 
-    void const * data,
-    void * value);
+    struct CHMap * map, 
+    void * data);
 
 // Readsvalue of a key.
 bool
