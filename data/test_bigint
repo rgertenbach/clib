@@ -1,0 +1,4 @@
+#! /usr/bin/bash
+cc bigint_test.c bigint.c list.c -Wall -Wextra -o bigint_test && \
+  ./bigint_test && \
+  rm bigint_test
