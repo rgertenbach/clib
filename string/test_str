@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cc -Wall -Wextra -Werror str_test.c str.c -o str
+
+[[ -f "str" ]] && ./str
+[[ -f "str" ]] && rm str

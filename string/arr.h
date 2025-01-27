@@ -19,9 +19,10 @@ int strfind(char const * const s,
 // @param s The string to find.
 // @param arr The array to find s in.
 // @param n The number of elements in arr.
-// @return Whetehr s is in arr.
+// @return Whether s is in arr.
 bool strin(char const * const s,
            char const * const * const arr,
            size_t const n);
 
 #endif
+
