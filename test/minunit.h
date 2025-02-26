@@ -1,3 +1,6 @@
+#ifndef MINUNIT_H
+#define MINUNIT_H
+
 #include <stdio.h>
 
 #define MU_NO_CLEANUP() do { \
@@ -61,3 +64,5 @@ int tests_failed = 0;
     return mu_result; \
   } \
 } while (0)
+
+#endif // MINUNIT_H
