@@ -1,40 +1,77 @@
-#include <string.h>
 #include <limits.h>
+#include <string.h>
 
 #include "split.h"
 
-size_t strsplit(char ** const dest, 
-                char const * const s, 
-                char const * const delim)
+static bool
+starts_with(char const * s, char const * prefix)
+{
+  while (*prefix != '\0') {
+    if (*s == '\0' || *s != *prefix) {
+      return false;
+    }
+    prefix++;
+    s++;
+  }
+  return true;
+}
+
+extern size_t
+strsplit(char ** const dest, char const * const s, char const * const delim)
 {
   return strnsplit(dest, s, delim, SSIZE_MAX, SSIZE_MAX);
 }
 
-size_t strnsplit(char ** const dest,
-                 char const * const s,
-                 char const * const delim,
-                 size_t const maxelem,
-                 size_t const maxlen)
+static size_t
+strsplitcs(char ** const dest, char const * const s, size_t const maxelem)
 {
-  if (*s == '\0' || maxelem == 0) return 0;
-  size_t n = 0;
-  size_t len = 0;
-  size_t const delim_len = strlen(delim);
-  size_t i = 0;
 
-  for (; s[i] != '\0'; ++i) {
-    if (len == maxlen - 1 || (len && strncmp(s + i, delim, delim_len) == 0)) {
-      dest[n++][len] = '\0';
-      len = 0;              
-      // If we ran out of string length we move to the delimiter.
-      // Very inefficient!  
-      while (s[i] != '\0' && strncmp(s + i, delim, delim_len)) ++i;  
-      i += delim_len - 1;
-      if (n == maxelem) break;
-    } else {
-      dest[n][len++] = s[i];
-    }
+  size_t nout = 0;
+  for (size_t i = 0; i < maxelem && s[i] != '\0'; ++i) {
+    dest[nout][0] = s[i];
+    dest[nout++][1] = '\0';
   }
-  if (len && s[i] == '\0') dest[n++][len] = '\0';
-  return n;
+  return nout;
+}
+
+extern size_t
+strnsplit(char ** const dest, char const * const s, char const * const delim,
+          size_t const maxelem, size_t const maxlen)
+{
+  size_t const delim_len = strlen(delim);
+  size_t const s_len = strlen(s);
+  if (s_len == 0 || maxelem == 0 || maxelem == 0) {
+    return 0;
+  }
+  if (delim_len == 0) {
+    return strsplitcs(dest, s, maxelem);
+  }
+  size_t n_elems = 0;
+  size_t elem_len = 0;
+  size_t i = 0;
+  while (i < s_len) {
+    if (n_elems == maxelem) {
+      break;
+    }
+    if (starts_with(s + i, delim)) {
+      dest[n_elems++][elem_len] = '\0';
+      elem_len = 0;
+      i += delim_len;
+      continue;
+    }
+    if (elem_len == maxlen - 1) {
+      dest[n_elems++][elem_len] = '\0';
+      elem_len = 0;
+      while (i < s_len && !starts_with(s + i, delim)) {
+        i++;
+      }
+      i += delim_len;
+      continue;
+    }
+    dest[n_elems][elem_len++] = s[i++];
+  }
+  if (n_elems < maxelem && elem_len && s[i] == '\0') {
+    dest[n_elems++][elem_len] = '\0';
+  }
+  return n_elems;
 }

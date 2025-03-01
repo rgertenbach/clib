@@ -67,7 +67,7 @@ char *test_unlimited_strnsplit_two_elems_long_delimiter(void)
   return NULL;
 }
 
-char *test_strnsplit_too_few_elems(void)
+char *test_strnsplit_too_many_elems(void)
 {
   char **dest;
   setup();
@@ -81,12 +81,12 @@ char *test_strnsplit_too_few_elems(void)
   return NULL;
 }
 
-char *test_strnsplit_too_short_elems(void)
-{
+char *test_strnsplit_too_long_elems(void)
+{ 
   char **dest;
   setup();
   size_t n = strnsplit(dest, "foobar,bazbim", ",", 4, 4);
-  mu_test("Extracted two elements", n == 2, cleanup);
+  mu_test_equal("Extracted", 2, n, cleanup);
   mu_test("1st Element is \"foo\"", strcmp(dest[0], "foo") == 0, cleanup);
   mu_test("2nd Element is \"baz\"", strcmp(dest[1], "baz") == 0, cleanup);
   cleanup();
@@ -175,8 +175,8 @@ void all_tests(void)
   mu_run_test(test_unlimited_strnsplit_ignore_trailing_delimiter);
   mu_run_test(test_unlimited_strnsplit_two_elems_long_delimiter);
 
-  mu_run_test(test_strnsplit_too_few_elems);
-  mu_run_test(test_strnsplit_too_short_elems);
+  mu_run_test(test_strnsplit_too_many_elems);
+  mu_run_test(test_strnsplit_too_long_elems);
   mu_run_test(test_unlimited_strnsplit_no_delimiter);
 
   // In case strsplit is not just a wrapper around strnsplit.
