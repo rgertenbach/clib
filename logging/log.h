@@ -1,7 +1,8 @@
+// Requires LOG_LEVEL=LOG_ERROR (or some other level)
 #ifndef LOG_H_
+#define LOG_H_
 #include <stdbool.h>
 #include <stdio.h>
-
 
 enum LogLevel {
     LOG_EVERYTHING = 0,
@@ -13,7 +14,7 @@ enum LogLevel {
     LOG_NOTHING = 6,
 };
 
-enum LogLevel LOG_LEVEL = LOG_DEBUG;
+enum LogLevel LOG_LEVEL = LOG_ERROR;
 
 #ifndef LOG_STREAM
 #define LOG_STREAM stderr
@@ -50,5 +51,4 @@ format_log_level(enum LogLevel level)
         }                                                                     \
     } while (0)
 
-#define LOG_H_
 #endif  // LOG_H_
