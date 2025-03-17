@@ -14,7 +14,7 @@ enum LogLevel {
     LOG_NOTHING = 6,
 };
 
-enum LogLevel LOG_LEVEL = LOG_ERROR;
+extern enum LogLevel LOG_LEVEL;
 
 #ifndef LOG_STREAM
 #define LOG_STREAM stderr
