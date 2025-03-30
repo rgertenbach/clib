@@ -1,4 +1,18 @@
+// Header only library for logging.
+//
 // Requires LOG_LEVEL=LOG_ERROR (or some other level)
+// Example:
+// ```c
+// #define LOG_IMPL
+// #include "/home/robin/src/clib/logging/log.h"
+// enum LogLevel LOG_LEVEL = LOG_DEBUG;
+// int main(void)
+// {
+//     char * who = "World!";
+//     LOG(LOG_WARN, "Hello %s\n", who);
+//     return 0;
+// }
+// ````
 #ifndef LOG_H_
 #define LOG_H_
 #include <stdbool.h>
@@ -20,10 +34,12 @@ extern enum LogLevel LOG_LEVEL;
 #define LOG_STREAM stderr
 #endif  // LOG_STREAM
 
+char * format_log_level(enum LogLevel level);
+
+#ifdef LOG_IMPL
 char *
 format_log_level(enum LogLevel level)
 {
-    (void) fprintf;  // To silence warning of unused include.
     switch (level) {
     case LOG_DEBUG:
         return "[DEBUG]";
@@ -39,6 +55,7 @@ format_log_level(enum LogLevel level)
         return "[INVALID LOG LEVEL]";
     }
 }
+#endif
 
 #define LOG(severity, fstring, ...)                                           \
     do {                                                                      \
